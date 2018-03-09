@@ -1,0 +1,431 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-if.html">
+<link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
+<link rel="import" href="../paper-button/paper-button.html">
+<link rel="import" href="../arc-icons/arc-icons.html">
+<link rel="import" href="../iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../iron-collapse/iron-collapse.html">
+<link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-tooltip/paper-tooltip.html">
+<link rel="import" href="../api-property-form-item/api-property-form-item.html">
+<link rel="import" href="../marked-element/marked-element.html">
+<link rel="import" href="../markdown-styles/markdown-styles.html">
+<link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
+
+<dom-module id="api-headers-form-item">
+  <template strip-whitespace>
+    <style include="markdown-styles">
+    :host {
+      display: block;
+      @apply --raml-headers-form-item;
+      @apply --api-headers-form-item;
+
+      --paper-input-container-label: {
+        color: var(--api-headers-form-input-label-color, var(--raml-headers-form-input-label-color, var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.54))));
+      }
+    }
+
+    :host([required]) paper-input {
+      --paper-input-container-label: {
+        color: var(--api-headers-form-input-label-color-required, var(--raml-headers-form-input-label-color-required, var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72))));
+      }
+    }
+
+    .form-row {
+      @apply --layout-horizontal;
+      @apply --layout-center;
+      @apply --raml-request-parameters-editor-row;
+      @apply --api-request-parameters-editor-row;
+    }
+
+    .markdown-html p:first-child {
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .markdown-html p:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .docs {
+      @apply --arc-font-common-base;
+      font-size: 13px !important;
+      font-weight: 200;
+      line-height: 24px;
+      color: var(--inline-documentation-color, rgba(0, 0, 0, 0.87));
+    }
+
+    .help-icon {
+      margin-top: 16px;
+      color: var(--from-row-action-icon-color, var(--icon-button-color, rgba(0, 0, 0, 0.74)));
+      transition: color 0.2s linear;
+    }
+
+    .help-icon:hover {
+      color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
+    }
+    .value-field,
+    .name-field {
+      position: relative;
+    }
+
+    .name-field,
+    .value-field {
+      @apply --layout-flex;
+      @apply --layout-horizontal;
+      @apply --layout-start;
+    }
+
+    .param-name,
+    api-property-form-item {
+      @apply --layout-flex;
+    }
+
+    api-property-form-item[is-array] {
+      margin-top: 8px;
+    }
+
+    .param-name {
+      margin-right: 12px;
+      @apply --raml-headers-form-name-input;
+      @apply --api-headers-form-name-input;
+    }
+
+    .narrow.form-row {
+      display: block;
+      @apply --raml-request-parameters-editor-row-narrow;
+      @apply --api-request-parameters-editor-row-narrow;
+    }
+
+    .narrow .param-name {
+      margin-right: 0;
+      @apply --raml-headers-form-name-input-narrow;
+      @apply --api-headers-form-name-input-narrow;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    :host([is-array]) .value-field {
+      @apply --layout-start;
+      @apply --raml-headers-form-array-parameter;
+      @apply --api-headers-form-array-parameter;
+    }
+    </style>
+    <template is="dom-if" if="[[!isCustom]]">
+      <div class="value-field">
+        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
+        <template is="dom-if" if="[[model.hasDescription]]">
+          <span>
+            <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
+            <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
+          </span>
+        </template>
+      </div>
+    </template>
+    <template is="dom-if" if="[[isCustom]]">
+      <div class$="form-row [[_computeNarrowClass(narrow)]]">
+        <div class="name-field">
+          <paper-input
+            value="{{name}}"
+            label="Header name"
+            class="param-name"
+            on-focus="_headerNameFocus"
+            type="text"
+            pattern="\S*"
+            error="Header name is not valid"
+            required></paper-input>
+          <paper-autocomplete
+            dynamic-align
+            open-on-focus on-query="_queryHeaderName"
+            on-selected="_onHeaderNameSelected"></paper-autocomplete>
+        </div>
+        <div class="value-field">
+          <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
+          <template is="dom-if" if="[[model.hasDescription]]">
+            <span>
+              <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
+              <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
+            </span>
+          </template>
+        </div>
+      </div>
+    </template>
+    <template is="dom-if" if="[[model.hasDescription]]" restamp>
+      <div class="docs">
+        <iron-collapse opened="[[docsOpened]]">
+          <marked-element markdown="[[model.description]]">
+            <div class="markdown-html markdown-body"></div>
+          </marked-element>
+        </iron-collapse>
+      </div>
+    </template>
+    <template is="dom-if" if="[[_valueInput]]">
+      <paper-autocomplete
+        class="value-autocomplete"
+        on-selected="_onHeaderValueSelected"
+        target="[[_valueInput]]"
+        position-target="[[_valueInput]]"
+        dynamic-align
+        vertical-align="bottom"
+        horizontal-align="left"
+        vertical-offset="56"
+        source="[[valueSuggestions]]"></paper-autocomplete>
+    </template>
+  </template>
+  <script>
+  /**
+   * Headers form item.
+   *
+   * Provides UI to enter headers data and autocomplete function for both header
+   * names and values.
+   *
+   * @customElement
+   * @polymer
+   * @demo demo/index.html
+   * @appliesMixin Polymer.IronValidatableBehavior
+   */
+  class ApiHeadersFormItem extends Polymer.mixinBehaviors(Polymer.IronValidatableBehavior, Polymer.Element) {
+    static get is() {
+      return 'api-headers-form-item';
+    }
+    static get properties() {
+      return {
+        /**
+         * View model for the headers.
+         */
+        model: {
+          type: Array
+        },
+        /**
+         * The name of this element.
+         */
+        name: {
+          notify: true,
+          type: String,
+          observer: '_nameChanged'
+        },
+        /**
+         * The value of this element.
+         */
+        value: {
+          notify: true,
+          type: String
+        },
+        /**
+         * If set it renders a narrow layout
+         */
+        narrow: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * True to render documentation (if set in model)
+         */
+        docsOpened: Boolean,
+        /**
+         * Set if the header is not specified in the RAML type (is a custom
+         * header).
+         */
+        isCustom: {
+          type: Boolean,
+          value: false
+        },
+        /**
+         * If set it is render the item control as an array item (adds more
+         * spacing to the element)
+         */
+        isArray: {
+          type: Boolean,
+          reflectToAttribute: true
+        },
+        /**
+         * List of value suggestion for current header. The list is updated
+         * automatically when header name changes
+         */
+        valueSuggestions: Array,
+        // Reference to header value input.
+        _valueInput: Object
+      };
+    }
+
+    // Toggles documentation (if available)
+    toggleDocumentation() {
+      this.docsOpened = !this.docsOpened;
+    }
+    // Handler for header name field focus
+    _headerNameFocus(e) {
+      const autocomplete = this.shadowRoot.querySelector('paper-autocomplete');
+      if (autocomplete.target) {
+        return;
+      }
+      autocomplete.target = e.target;
+    }
+    /**
+     * A handler called when the user selects a suggestion.
+     * @param {CustomEvent} e
+     */
+    _onHeaderNameSelected(e) {
+      this.set('name', e.detail.value);
+    }
+    /**
+     * Handler for autocomplete element. Query the datastore for suggestions.
+     *
+     * @param {Event} e Autocomplete event
+     */
+    _queryHeaderName(e) {
+      const suggestions = this._queryHeaderNameSuggestions(e.detail.value);
+      const autocomplete = this.shadowRoot.querySelector('paper-autocomplete');
+      if (!suggestions || !suggestions.length) {
+        autocomplete.source = [];
+        return;
+      }
+      autocomplete.source = suggestions.map((item) => {
+        return {
+          value: item.key,
+          display: item.key
+        };
+      });
+    }
+    /**
+     * Dispatches `query-headers` custom event to retreive from the application
+     * headers definition.
+     *
+     * `api-headers-form` element contains `arc-definitions` element that
+     * listens for this event.
+     *
+     * @param {String} q Header name to query for
+     * @return {Array} Headers definition or empty array
+     */
+    _queryHeaderNameSuggestions(q) {
+      const ev = new CustomEvent('query-headers', {
+        detail: {
+          type: 'request',
+          query: q
+        },
+        cancelable: true,
+        bubbles: true,
+        composed: true
+      });
+      this.dispatchEvent(ev);
+      return ev.detail.headers;
+    }
+
+    /**
+     * Computes css class name for narrow layout
+     *
+     * @param {Boolean} narrow Value of the `narrow` property.
+     * @return {String} Class definition.
+     */
+    _computeNarrowClass(narrow) {
+      return narrow ? 'narrow' : '';
+    }
+
+    _getValidity() {
+      var selector = 'raml-type-form-input[data-type="';
+      selector += this.isCustom ? 'custom' : 'typed';
+      selector += '"]';
+      var input = this.shadowRoot.querySelector(selector);
+      return input.validate();
+    }
+    /**
+     * Updates value suggestions for custom values.
+     *
+     * @param {String} name Header name
+     */
+    _nameChanged(name) {
+      var model = this.model;
+      if (!name || !model || !model.schema || model.schema.isEnum) {
+        this._updateValueAutocomplete();
+        return;
+      }
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        const info = this._queryHeaderNameSuggestions(name);
+        this._updateValueAutocomplete(info);
+      });
+    }
+    /**
+     * Handler for custom value focus event.
+     * Sets the `_valueInput` proeprty for value autosugession
+     */
+    _customChangeFocus() {
+      if (this._valueInput) {
+        const ac = this.shadowRoot.querySelector('.value-autocomplete');
+        ac.opened = true;
+        ac._previousQuery = '';
+        ac._valueChanged();
+        return;
+      }
+      if (this.__customChangeFocus) {
+        return;
+      }
+      this.__customChangeFocus = true;
+      this._valueInput = this.shadowRoot.querySelector('api-property-form-item');
+      Polymer.RenderStatus.afterNextRender(this, () => {
+        const ac = this.shadowRoot.querySelector('.value-autocomplete');
+        ac.opened = true;
+        ac._previousQuery = '';
+        ac._valueChanged();
+      });
+    }
+
+    /**
+     * Updates header value autocomplete if header definition contains
+     * the `autocomplete` entry. It only sets the autocomplete value when
+     * only one header has been found for current input.
+     *
+     * @param {Array<Object>} headers List of received headers from headers query
+     */
+    _updateValueAutocomplete(headers) {
+      if (!headers || !headers.length) {
+        if (this.valueSuggestions) {
+          this.valueSuggestions = undefined;
+        }
+        return;
+      }
+      var header;
+      for (var i = 0, len = headers.length; i < len; i++) {
+        if (headers[i].key.toLowerCase() === this.name.toLowerCase()) {
+          header = headers[i];
+          break;
+        }
+      }
+      if (header) {
+        this.valueSuggestions = header.autocomplete;
+      } else {
+        this.valueSuggestions = undefined;
+      }
+    }
+
+    /**
+     * A handler called when the user selects a value suggestion.
+     */
+    _onHeaderValueSelected(e) {
+      this.set('value', e.detail.value);
+    }
+    /**
+     * Closes autocomplete for value when inpur looses focus.
+     */
+    _closeAutocomplete() {
+      if(!this._valueInput) {
+        return;
+      }
+      if (this.__closingAutocomplete) {
+        return;
+      }
+      this.__closingAutocomplete = true;
+      setTimeout(() => {
+        this.__closingAutocomplete = false;
+        this.shadowRoot.querySelector('.value-autocomplete').opened = false;
+      }, 250);
+    }
+  }
+
+  window.customElements.define(ApiHeadersFormItem.is, ApiHeadersFormItem);
+  </script>
+</dom-module>

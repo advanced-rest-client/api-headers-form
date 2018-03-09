@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>api-headers-form test</title>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../../web-component-tester/browser.js"></script>
+
+    <link rel="import" href="../api-headers-form.html">
+  </head>
+  <body>
+
+    <test-fixture id="BasicTestFixture">
+      <template>
+        <api-headers-form></api-headers-form>
+      </template>
+    </test-fixture>
+
+    <script>
+      suite('api-headers-form', () => {
+
+        test('Renders empty form', (done) => {
+          const element = fixture('BasicTestFixture');
+          flush(() => {
+            const root = element.shadowRoot;
+            const node = root.querySelector('.form-item');
+            assert.notOk(node);
+            done();
+          });
+        });
+
+        test('Adds custom header', (done) => {
+          const element = fixture('BasicTestFixture');
+          element.add();
+          flush(() => {
+            const root = element.shadowRoot;
+            const nodes = root.querySelectorAll('.form-item');
+            assert.lengthOf(nodes, 1);
+            done();
+          });
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

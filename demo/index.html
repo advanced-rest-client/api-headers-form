@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>api-headers-form demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
+    <link rel="import" href="../api-headers-form.html">
+    <link rel="import" href="../../api-view-model-transformer/api-view-model-transformer.html">
+    <custom-style>
+      <style is="custom-style" include="demo-pages-shared-styles">
+      output {
+        background-color: #FFF3E0;
+        white-space: pre-wrap;
+      }
+      </style>
+    </custom-style>
+  </head>
+  <body>
+    <dom-bind id="demo">
+      <template is="dom-bind">
+        <div class="vertical-section-container">
+          <api-view-model-transformer amf-model="[[amfModel]]" on-view-model-changed="_updateView"></api-view-model-transformer>
+          <api-headers-form model="{{viewModel}}" value="{{headers}}"></api-headers-form>
+          <output>[[headers]]</output>
+        </div>
+      </template>
+    </dom-bind>
+    <script>
+    (function(scope) {
+      scope._updateView = function(e) {
+        let form = document.querySelector('api-headers-form');
+        form.model = e.detail.value;
+      };
+      scope._load = function() {
+        fetch('./headers-model.json')
+        .then((response) => response.json())
+        .then((data) => {
+          data = data[0]['http://raml.org/vocabularies/document#encodes'][0];
+          data = data['http://raml.org/vocabularies/http#endpoint'][0];
+          data = data['http://www.w3.org/ns/hydra/core#supportedOperation'][0];
+          data = data['http://www.w3.org/ns/hydra/core#expects'][0];
+          data = data['http://raml.org/vocabularies/http#header'];
+          scope.amfModel = data;
+        });
+      };
+      window.addEventListener('WebComponentsReady', function() {
+        scope._load();
+      });
+    })(document.getElementById('demo'));
+    </script>
+  </body>
+</html>
