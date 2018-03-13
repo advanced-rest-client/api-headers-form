@@ -14,6 +14,7 @@
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
 /// <reference path="../arc-icons/arc-icons.d.ts" />
 /// <reference path="../arc-definitions/arc-definitions.d.ts" />
+/// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
 /// <reference path="api-headers-form-item.d.ts" />
 
 /**
