@@ -10,8 +10,8 @@
   },
   "private": false,
   "scripts": {
-    "lint": "lint paper-autocomplete.html --rules polymer-1",
-    "test-sauce": "polymer test --plugin sauce --job-name \"paper-autocomplete:local-test\"",
+    "lint": "lint api-headers-form.html api-headers-form-item.html",
+    "test-sauce": "polymer test --plugin sauce --job-name \"api-headers-form:local-test\"",
     "test": "polymer test --plugin local",
     "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
   },
