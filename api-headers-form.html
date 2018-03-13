@@ -4,6 +4,7 @@
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../arc-definitions/arc-definitions.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
 <link rel="import" href="api-headers-form-item.html">
 
 <dom-module id="api-headers-form">
@@ -31,6 +32,11 @@
 
     .delete-icon:hover {
       color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
+    }
+
+    .enable-checkbox {
+      margin-top: 32px;
+      margin-right: 8px;
     }
 
     .action-button {
@@ -70,6 +76,9 @@
         <dom-repeat items="{{model}}">
           <template>
             <div class="form-item">
+              <span>
+                <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable/disable this header"></paper-checkbox>
+              </span>
               <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.isCustom]]" is-array="[[item.isArray]]" narrow="[[narrow]]"></api-headers-form-item>
               <span>
                 <paper-icon-button title="Remove header" class="delete-icon" suffix icon="arc:remove-circle-outline" on-tap="_removeHeader"></paper-icon-button>
@@ -232,11 +241,8 @@
         if (record.path === 'model' && record.value) {
           this._autoDescribeModel(record.value);
         }
-      } else if (record.path.match(/model.\d+.(name|value)/)) {
+      } else if (record.path.match(/model.\d+.(name|value|schema\.enabled)/)) {
         this._updateValue();
-        if (record.path.match(/model.\d+.name/)) {
-          // this._headerNameChanged(record.path, record.value);
-        }
       }
     }
     /**
@@ -249,8 +255,8 @@
       this.__updatingModelValue = true;
       setTimeout(() => {
         // Prohibits computation when model is set.
-        this.__updatingModelValue = false;
         this.__updateValue();
+        this.__updatingModelValue = false;
       }, 25);
     }
     /**
@@ -263,6 +269,9 @@
         return;
       }
       const value = h.map((item) => {
+        if (item.schema && item.schema.enabled === false) {
+          return;
+        }
         let n = item.name || '';
         let v = item.value || '';
         if (!n && !v) {
@@ -299,6 +308,7 @@
       }
       this.set(['model', index, 'description'], type.desc);
       this.set(['model', index, 'hasDescription'], true);
+      this.set(['model', index, 'schema', 'examples'], [type.example]);
     }
 
     /**

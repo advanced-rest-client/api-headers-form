@@ -21,7 +21,8 @@
     "api-property-form-item": "advanced-rest-client/api-property-form-item#^2.0.1",
     "marked-element": "PolymerElements/marked-element#^2.4.0",
     "markdown-styles": "advanced-rest-client/markdown-styles#^2.0.1",
-    "arc-definitions": "advanced-rest-client/arc-definitions#^2.0.1"
+    "arc-definitions": "advanced-rest-client/arc-definitions#^2.0.1",
+    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.2"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
