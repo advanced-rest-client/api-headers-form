@@ -9,7 +9,6 @@
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../api-property-form-item/api-property-form-item.html">
 <link rel="import" href="../marked-element/marked-element.html">
 <link rel="import" href="../markdown-styles/markdown-styles.html">
@@ -22,16 +21,6 @@
       display: block;
       @apply --raml-headers-form-item;
       @apply --api-headers-form-item;
-
-      --paper-input-container-label: {
-        color: var(--api-headers-form-input-label-color, var(--raml-headers-form-input-label-color, var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.54))));
-      }
-    }
-
-    :host([required]) paper-input {
-      --paper-input-container-label: {
-        color: var(--api-headers-form-input-label-color-required, var(--raml-headers-form-input-label-color-required, var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72))));
-      }
     }
 
     .form-row {
@@ -68,6 +57,7 @@
     .help-icon:hover {
       color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
     }
+
     .value-field,
     .name-field {
       position: relative;
@@ -119,12 +109,9 @@
     </style>
     <template is="dom-if" if="[[!isCustom]]">
       <div class="value-field">
-        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
+        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
         <template is="dom-if" if="[[model.hasDescription]]">
-          <span>
-            <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
-            <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
-          </span>
+          <paper-icon-button class="help-icon" title="Display documentation" icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
         </template>
       </div>
     </template>
@@ -148,10 +135,7 @@
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
           <template is="dom-if" if="[[model.hasDescription]]">
-            <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
-              <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
-            </span>
+            <paper-icon-button class="help-icon" title="Display documentation" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
           </template>
         </div>
       </div>
@@ -250,7 +234,9 @@
          */
         valueSuggestions: Array,
         // Reference to header value input.
-        _valueInput: Object
+        _valueInput: Object,
+        // True when this model is required
+        required: Boolean
       };
     }
 
