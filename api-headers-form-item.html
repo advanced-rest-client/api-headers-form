@@ -9,7 +9,6 @@
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../paper-tooltip/paper-tooltip.html">
 <link rel="import" href="../api-property-form-item/api-property-form-item.html">
 <link rel="import" href="../marked-element/marked-element.html">
 <link rel="import" href="../markdown-styles/markdown-styles.html">
@@ -116,15 +115,17 @@
       @apply --raml-headers-form-array-parameter;
       @apply --api-headers-form-array-parameter;
     }
+
+    marked-element {
+      background-color: var(--inline-documentation-background-color, #FFF3E0);
+      padding: 4px;
+    }
     </style>
     <template is="dom-if" if="[[!isCustom]]">
       <div class="value-field">
         <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
-        <template is="dom-if" if="[[model.hasDescription]]">
-          <span>
-            <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
-            <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
-          </span>
+        <template is="dom-if" if="[[_hasDocumentation]]">
+          <paper-icon-button class="help-icon" icon="arc:help" on-tap="toggleDocumentation" title="Display documentation"></paper-icon-button>
         </template>
       </div>
     </template>
@@ -147,20 +148,17 @@
         </div>
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
-          <template is="dom-if" if="[[model.hasDescription]]">
-            <span>
-              <paper-icon-button class="help-icon" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
-              <paper-tooltip position="left" offset="1" margin-top="1" animation-delay="300">Display documentation</paper-tooltip>
-            </span>
+          <template is="dom-if" if="[[_hasDocumentation]]">
+            <paper-icon-button class="help-icon" icon="arc:help" on-tap="toggleDocumentation" title="Display documentation"></paper-icon-button>
           </template>
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[model.hasDescription]]" restamp>
+    <template is="dom-if" if="[[_hasDocumentation]]" restamp>
       <div class="docs">
         <iron-collapse opened="[[docsOpened]]">
-          <marked-element markdown="[[model.description]]">
-            <div class="markdown-html markdown-body"></div>
+          <marked-element markdown="[[_computeDocumentation(model)]]">
+            <div slot="markdown-html" class="markdown-body"></div>
           </marked-element>
         </iron-collapse>
       </div>
@@ -250,7 +248,12 @@
          */
         valueSuggestions: Array,
         // Reference to header value input.
-        _valueInput: Object
+        _valueInput: Object,
+
+        _hasDocumentation: {
+          type: Boolean,
+          computed: '_computeHasDocumentation(model)'
+        }
       };
     }
 
@@ -423,6 +426,68 @@
         this.__closingAutocomplete = false;
         this.shadowRoot.querySelector('.value-autocomplete').opened = false;
       }, 250);
+    }
+
+    /**
+     * Computes documentation as a markdown to be placed in the `marked-element`
+     * @param {Object} item View model
+     */
+    _computeDocumentation(item) {
+      if (!item) {
+        return;
+      }
+      let docs = '';
+      if (item.description) {
+        docs += item.description;
+      }
+      if (!item.schema) {
+        return docs;
+      }
+      const schema = item.schema;
+      docs += '\n\n\n';
+      if (schema.pattern) {
+        docs += '- Pattern: `' + schema.pattern + '`\n';
+      }
+      if (schema.examples && schema.examples.length) {
+        schema.examples.forEach((item) => {
+          docs += '- Example';
+          if (typeof item === 'string') {
+            docs += ': `' + item.value + '`\n';
+            return;
+          } else {
+            if (item.hasName) {
+              docs += ' ' + item.name;
+            }
+            docs += ': `' + item.value + '`\n';
+          }
+        });
+      }
+      return docs;
+    }
+    /**
+     * Computes if model item has documentation to display.
+     *
+     * @param {Object} item Model item
+     * @return {Boolean} True if documentation can be rendered.
+     */
+    _computeHasDocumentation(item) {
+      if (!item) {
+        return;
+      }
+      if (item.hasDescription) {
+        return true;
+      }
+      if (!item.schema) {
+        return false;
+      }
+      const schema = item.schema;
+      if (schema.pattern) {
+        return true;
+      }
+      if (schema.examples && schema.examples.length) {
+        return true;
+      }
+      return false;
     }
   }
 

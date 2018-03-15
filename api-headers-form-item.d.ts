@@ -19,7 +19,6 @@
 /// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
 /// <reference path="../paper-input/paper-input.d.ts" />
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../paper-tooltip/paper-tooltip.d.ts" />
 /// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
 /// <reference path="../marked-element/marked-element.d.ts" />
 /// <reference path="../markdown-styles/markdown-styles.d.ts" />
@@ -82,6 +81,7 @@ declare class ApiHeadersFormItem extends
    * Reference to header value input.
    */
   _valueInput: object|null|undefined;
+  readonly _hasDocumentation: boolean|null|undefined;
   _getValidity(): any;
 
   /**
@@ -157,6 +157,21 @@ declare class ApiHeadersFormItem extends
    * Closes autocomplete for value when inpur looses focus.
    */
   _closeAutocomplete(): void;
+
+  /**
+   * Computes documentation as a markdown to be placed in the `marked-element`
+   *
+   * @param item View model
+   */
+  _computeDocumentation(item: object|null): any;
+
+  /**
+   * Computes if model item has documentation to display.
+   *
+   * @param item Model item
+   * @returns True if documentation can be rendered.
+   */
+  _computeHasDocumentation(item: object|null): Boolean|null;
 }
 
 interface HTMLElementTagNameMap {
