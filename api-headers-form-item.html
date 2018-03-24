@@ -13,9 +13,10 @@
 <link rel="import" href="../marked-element/marked-element.html">
 <link rel="import" href="../markdown-styles/markdown-styles.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
-
+<link rel="import" href="../api-form-mixin/api-form-styles.html">
 <dom-module id="api-headers-form-item">
   <template strip-whitespace>
+    <style include="api-form-styles"></style>
     <style include="markdown-styles">
     :host {
       display: block;
@@ -28,34 +29,6 @@
       @apply --layout-center;
       @apply --raml-request-parameters-editor-row;
       @apply --api-request-parameters-editor-row;
-    }
-
-    .markdown-html p:first-child {
-      margin-top: 0;
-      padding-top: 0;
-    }
-
-    .markdown-html p:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .docs {
-      @apply --arc-font-common-base;
-      font-size: 13px !important;
-      font-weight: 200;
-      line-height: 24px;
-      color: var(--inline-documentation-color, rgba(0, 0, 0, 0.87));
-    }
-
-    .help-icon {
-      margin-top: 16px;
-      color: var(--from-row-action-icon-color, var(--icon-button-color, rgba(0, 0, 0, 0.74)));
-      transition: color 0.2s linear;
-    }
-
-    .help-icon:hover {
-      color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
     }
 
     .value-field,
@@ -106,12 +79,16 @@
       @apply --raml-headers-form-array-parameter;
       @apply --api-headers-form-array-parameter;
     }
+
+    paper-icon-button {
+      margin-top: 16px;
+    }
     </style>
     <template is="dom-if" if="[[!isCustom]]">
       <div class="value-field">
         <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
         <template is="dom-if" if="[[model.hasDescription]]">
-          <paper-icon-button class="help-icon" title="Display documentation" icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
+          <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
         </template>
       </div>
     </template>
@@ -129,13 +106,16 @@
             required></paper-input>
           <paper-autocomplete
             dynamic-align
+            vertical-align="bottom"
+            horizontal-align="left"
+            vertical-offset="56"
             open-on-focus on-query="_queryHeaderName"
             on-selected="_onHeaderNameSelected"></paper-autocomplete>
         </div>
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
           <template is="dom-if" if="[[model.hasDescription]]">
-            <paper-icon-button class="help-icon" title="Display documentation" suffix icon="arc:help" hidden$="[[!model.hasDescription]]" on-tap="toggleDocumentation"></paper-icon-button>
+            <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
           </template>
         </div>
       </div>
@@ -144,7 +124,7 @@
       <div class="docs">
         <iron-collapse opened="[[docsOpened]]">
           <marked-element markdown="[[model.description]]">
-            <div class="markdown-html markdown-body"></div>
+            <div slot="markdown-html" class="markdown-body"></div>
           </marked-element>
         </iron-collapse>
       </div>

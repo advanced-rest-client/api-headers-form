@@ -26,7 +26,7 @@
       <template is="dom-bind">
         <div class="vertical-section-container">
           <api-view-model-transformer amf-model="[[amfModel]]" on-view-model-changed="_updateView"></api-view-model-transformer>
-          <api-headers-form model="{{viewModel}}" value="{{headers}}"></api-headers-form>
+          <api-headers-form model="{{viewModel}}" value="{{headers}}" allow-disable-params allow-custom allow-hide-optional></api-headers-form>
           <output>[[headers]]</output>
         </div>
       </template>

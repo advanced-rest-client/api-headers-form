@@ -5,19 +5,17 @@
 <link rel="import" href="../arc-icons/arc-icons.html">
 <link rel="import" href="../arc-definitions/arc-definitions.html">
 <link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../api-form-mixin/api-form-mixin.html">
+<link rel="import" href="../api-form-mixin/api-form-styles.html">
+
 <link rel="import" href="api-headers-form-item.html">
 
 <dom-module id="api-headers-form">
   <template>
-    <style>
+    <style include="api-form-styles">
     :host {
       display: block;
       @apply --raml-headers-form;
-    }
-
-    .form-item {
-      @apply --layout-horizontal;
-      @apply --layout-start;
     }
 
     api-headers-form-item {
@@ -26,12 +24,6 @@
 
     .delete-icon {
       margin-top: 16px;
-      color: var(--from-row-action-icon-color, var(--icon-button-color, rgba(0, 0, 0, 0.74)));
-      transition: color 0.2s linear;
-    }
-
-    .delete-icon:hover {
-      color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
     }
 
     .enable-checkbox {
@@ -39,61 +31,43 @@
       margin-right: 8px;
     }
 
-    .action-button {
-      color: var(--raml-headers-form-action-button-color, var(--secondary-button-color, var(--accent-color)));
-      background: var(--raml-headers-form-action-button-background, var(--secondary-button-background, #fff));
-      @apply --secondary-button;
-      @apply --raml-headers-form-action-button;
-    }
-
-    .action-button:hover {
-      color: var(--raml-headers-form-action-button-color-hover, var(--secondary-button-color, var(--accent-color)));
-      background: var(--raml-headers-form-action-button-background-hover, var(--secondary-button-background, #fff));
-      @apply --secondary-button-hover;
-      @apply --raml-headers-form-action-button-hover;
-    }
-
-    .action-icon {
-      margin-right: 8px;
-      color: var(--raml-headers-form-action-icon-color, var(--secondary-button-color, var(--accent-color)));
-      opacity: var(--raml-headers-form-action-icon-opacity, 0.54);
-      transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
-    }
-
-    .action-button:hover .action-icon,
-    .action-icon:hover {
-      color: var(--raml-headers-form-action-icon-color-hover, var(--secondary-button-color, var(--accent-color)));
-      opacity: var(--raml-headers-form-action-icon-opacity-hover, 0.74);
-    }
-
     [hidden] {
       display: none !important;
+    }
+
+    .form-item paper-icon-button {
+      margin-top: 16px;
     }
     </style>
     <arc-definitions id="definitions"></arc-definitions>
     <iron-form>
       <form enctype="application/json">
+        <template is="dom-if" if="[[renderOptionalCheckbox]]">
+          <div class="optional-checkbox">
+            <paper-checkbox class="toggle-checkbox" checked="{{optionalOpened}}" title="Shows or hides optional parameters">Show optional headers</paper-checkbox>
+          </div>
+        </template>
         <dom-repeat items="{{model}}">
           <template>
-            <div class="form-item">
-              <span>
-                <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable/disable this header"></paper-checkbox>
-              </span>
-              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.isCustom]]" is-array="[[item.isArray]]" narrow="[[narrow]]"></api-headers-form-item>
-              <span>
-                <paper-icon-button title="Remove header" class="delete-icon" suffix icon="arc:remove-circle-outline" on-tap="_removeHeader"></paper-icon-button>
-              </span>
+            <div class="form-item" data-optional$="[[computeIsOptional(hasOptional, item)]]">
+              <template is="dom-if" if="[[allowDisableParams]]">
+                <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable or disable this header"></paper-checkbox>
+              </template>
+              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]"></api-headers-form-item>
+              <paper-icon-button title="Removes header from the form" class="action-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom"></paper-icon-button>
             </div>
           </template>
         </dom-repeat>
       </form>
     </iron-form>
-    <div class="add-action" hidden$="[[disallowCustom]]">
-      <paper-button class="action-button" on-tap="add" title="Add custom header button">
-        <iron-icon class="action-icon" icon="arc:add-circle-outline" alt="Add header icon"></iron-icon>
-        Add custom header
-      </paper-button>
-    </div>
+    <template is="dom-if" if="[[allowCustom]]">
+      <div class="add-action">
+        <paper-button class="action-button" on-tap="add" title="Adds new header to the form">
+          <iron-icon class="action-icon" icon="arc:add-circle-outline" alt="Add header icon"></iron-icon>
+          Add header
+        </paper-button>
+      </div>
+    </template>
   </template>
   <script>
   /**
@@ -155,20 +129,15 @@
    * @polymer
    * @demo demo/index.html
    * @appliesMixin Polymer.IronValidatableBehavior
+   * @appliesMixin ArcBehaviors.ApiFormMixin
    */
   class ApiHeadersForm extends Polymer.mixinBehaviors([
       Polymer.IronValidatableBehavior
-    ], Polymer.Element) {
+    ], ArcBehaviors.ApiFormMixin(Polymer.Element)) {
 
-    static get is() {
-      return 'api-headers-form';
-    }
+    static get is() { return 'api-headers-form'; }
     static get properties() {
       return {
-        /**
-         * View model for the headers.
-         */
-        model: Array,
         /**
          * Current value of the headers. Changing the value will update the list
          * of the headers.
@@ -176,15 +145,7 @@
         value: {
           type: String,
           notify: true
-        },
-        /**
-         * If set, custom headers won't be available.
-         */
-        disallowCustom: Boolean,
-        /**
-         * If set it renders a narrow layout
-         */
-        narrow: Boolean
+        }
       };
     }
 
@@ -193,46 +154,12 @@
         '_modelChanged(model.*)'
       ];
     }
-     /**
-      * Handler for the remove button click.
-      *
-      * @param {CustomEvent} e
-      */
-    _removeHeader(e) {
-      if (!e.model) {
-        return;
-      }
-      const i = e.model.get('index');
-      if (i < 0) {
-        return;
-      }
-      this.splice('model', i, 1);
-    }
     // Appends an empty header to the list.
     add() {
-      if (this.disallowCustom) {
+      if (!this.allowCustom) {
         return;
       }
-      const obj = {
-        value: '',
-        name: '',
-        isCustom: true,
-        schema: {
-          type: 'string'
-        }
-      };
-      const ev = new CustomEvent('api-property-model-build', {
-        detail: obj,
-        cancelable: true,
-        bubbles: true,
-        composed: true
-      });
-      this.dispatchEvent(ev);
-      if (!this.model) {
-        this.set('model', [obj]);
-      } else {
-        this.push('model', obj);
-      }
+      this.addCustom('header');
     }
 
     _modelChanged(record) {

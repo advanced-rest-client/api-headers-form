@@ -19,9 +19,9 @@
       </template>
     </test-fixture>
 
-    <test-fixture id="noCustom">
+    <test-fixture id="AllowCustom">
       <template>
-        <api-headers-form disallow-custom></api-headers-form>
+        <api-headers-form allow-custom></api-headers-form>
       </template>
     </test-fixture>
 
@@ -55,7 +55,7 @@
         });
 
         test('Adds custom header', (done) => {
-          const element = fixture('BasicTestFixture');
+          const element = fixture('AllowCustom');
           element.add();
           flush(() => {
             const root = element.shadowRoot;
@@ -65,8 +65,8 @@
           });
         });
 
-        test('Does not adds custom header when disabled', (done) => {
-          const element = fixture('noCustom');
+        test('Does not adds custom header when not enabled', (done) => {
+          const element = fixture('BasicTestFixture');
           element.add();
           flush(() => {
             const root = element.shadowRoot;
@@ -77,10 +77,10 @@
         });
 
         test('Dispatches api-property-model-build event', (done) => {
-          const element = fixture('BasicTestFixture');
+          const element = fixture('AllowCustom');
           element.addEventListener('api-property-model-build', function clb(e) {
             element.removeEventListener('api-property-model-build', clb);
-            assert.isTrue(e.detail.isCustom);
+            assert.isTrue(e.detail.schema.isCustom);
             done();
           });
           element.add();

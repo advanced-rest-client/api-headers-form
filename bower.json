@@ -22,7 +22,8 @@
     "marked-element": "PolymerElements/marked-element#^2.4.0",
     "markdown-styles": "advanced-rest-client/markdown-styles#^2.0.1",
     "arc-definitions": "advanced-rest-client/arc-definitions#^2.0.1",
-    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.2"
+    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.2",
+    "api-form-mixin": "advanced-rest-client/api-form-mixin#2.0.0-preview"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
