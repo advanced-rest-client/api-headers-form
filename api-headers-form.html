@@ -1,4 +1,5 @@
 <link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../polymer/lib/elements/dom-if.html">
 <link rel="import" href="../polymer/lib/elements/dom-repeat.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
@@ -38,8 +39,15 @@
     .form-item paper-icon-button {
       margin-top: 16px;
     }
+
+    .empty-info {
+      @apply --no-info-message;
+    }
     </style>
     <arc-definitions id="definitions"></arc-definitions>
+    <template is="dom-if" if="[[renderEmptyMessage]]">
+      <p class="empty-info">Headers are not defined for this endpoint</p>
+    </template>
     <iron-form>
       <form enctype="application/json">
         <template is="dom-if" if="[[renderOptionalCheckbox]]">
@@ -119,10 +127,10 @@
    *
    * ## Changes in v2
    *
-   * * The component won't listen for `headers-value-changed` custom event.
+   * The component won't listen for `headers-value-changed` custom event.
    * Components / applications using this element should handle headers change
    * event in the application and generate new model for the view.
-   * * Setting `value` makes no effect on the element. Only way to change
+   * Setting `value` makes no effect on the element. Only way to change
    * generated UI is to change the model.
    *
    * @customElement
