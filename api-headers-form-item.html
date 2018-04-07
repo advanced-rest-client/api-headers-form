@@ -110,7 +110,8 @@
             horizontal-align="left"
             vertical-offset="56"
             open-on-focus on-query="_queryHeaderName"
-            on-selected="_onHeaderNameSelected"></paper-autocomplete>
+            on-selected="_onHeaderNameSelected"
+            opened="{{suggestionsOpened}}"></paper-autocomplete>
         </div>
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
@@ -163,9 +164,7 @@
         /**
          * View model for the headers.
          */
-        model: {
-          type: Array
-        },
+        model: Array,
         /**
          * The name of this element.
          */
@@ -216,7 +215,11 @@
         // Reference to header value input.
         _valueInput: Object,
         // True when this model is required
-        required: Boolean
+        required: Boolean,
+        /**
+         * True when suggestions popover is opened
+         */
+        suggestionsOpened: Boolean
       };
     }
 
@@ -305,14 +308,16 @@
      * @param {String} name Header name
      */
     _nameChanged(name) {
-      var model = this.model;
+      const model = this.model;
       if (!name || !model || !model.schema || model.schema.isEnum) {
         this._updateValueAutocomplete();
+        this._updateHeaderDocs();
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
         const info = this._queryHeaderNameSuggestions(name);
         this._updateValueAutocomplete(info);
+        this._updateHeaderDocs(info);
       });
     }
     /**
@@ -366,6 +371,33 @@
       } else {
         this.valueSuggestions = undefined;
       }
+    }
+    /**
+     * Updates header description if the header doesn't contain a description
+     * already.
+     */
+    _updateHeaderDocs(info) {
+      if (this.suggestionsOpened) {
+        return;
+      }
+      const model = this.model;
+      if (!model) {
+        return;
+      }
+      if (!info || info.length !== 1) {
+        if (model.hasDescription && model.__ownDescription) {
+          this.set('model.description', undefined);
+          this.set('model.hasDescription', false);
+          this.model.__ownDescription = false;
+        }
+        return;
+      }
+      if (model.hasDescription) {
+        return;
+      }
+      this.set('model.description', info[0].desc);
+      this.set('model.hasDescription', true);
+      this.model.__ownDescription = true;
     }
 
     /**
