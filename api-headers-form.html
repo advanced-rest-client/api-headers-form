@@ -70,7 +70,7 @@
                 <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable or disable this header"></paper-checkbox>
               </template>
               <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]"></api-headers-form-item>
-              <paper-icon-button title="Removes header from the form" class="action-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom"></paper-icon-button>
+              <paper-icon-button title="Removes header from the form" class="action-icon delete-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom"></paper-icon-button>
             </div>
           </template>
         </dom-repeat>
