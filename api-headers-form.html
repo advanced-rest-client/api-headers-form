@@ -260,6 +260,10 @@
       name = name.toLowerCase();
       return suggestions.find((i) => i.key.toLowerCase() === name);
     }
+
+    _getValidity() {
+      return this.shadowRoot.querySelector('iron-form').validate();
+    }
   }
 
   window.customElements.define(ApiHeadersForm.is, ApiHeadersForm);

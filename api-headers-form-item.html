@@ -296,10 +296,10 @@
     }
 
     _getValidity() {
-      var selector = 'raml-type-form-input[data-type="';
+      let selector = 'api-property-form-item[data-type="';
       selector += this.isCustom ? 'custom' : 'typed';
       selector += '"]';
-      var input = this.shadowRoot.querySelector(selector);
+      const input = this.shadowRoot.querySelector(selector);
       return input.validate();
     }
     /**
