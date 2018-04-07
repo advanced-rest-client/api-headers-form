@@ -3,15 +3,16 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
-
     <title>api-headers-form demo</title>
-
     <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
+    <link rel="import" href="../../shadycss/apply-shim.html">
+    <link rel="import" href="../../polymer/lib/elements/custom-style.html">
     <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../api-headers-form.html">
     <link rel="import" href="../../api-view-model-transformer/api-view-model-transformer.html">
+    <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+    <link rel="import" href="../api-headers-form.html">
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
       output {
@@ -24,11 +25,17 @@
   <body>
     <dom-bind id="demo">
       <template is="dom-bind">
-        <div class="vertical-section-container">
+        <section role="main" class="vertical-section-container centered main">
           <api-view-model-transformer amf-model="[[amfModel]]" on-view-model-changed="_updateView"></api-view-model-transformer>
-          <api-headers-form model="{{viewModel}}" value="{{headers}}" allow-disable-params allow-custom allow-hide-optional></api-headers-form>
+          <api-headers-form value="{{headers}}" narrow="[[narrow]]" allow-custom="[[allowCustom]]" allow-disable-params="[[allowDisableParams]]" allow-hide-optional="[[allowHideOptional]]"></api-headers-form>
           <output>[[headers]]</output>
-        </div>
+        </section>
+        <section class="vertical-section-container centered">
+          <paper-checkbox checked="{{narrow}}">Render narrow view</paper-checkbox>
+          <paper-checkbox checked="{{allowHideOptional}}">Allow auto hide optional headers</paper-checkbox>
+          <paper-checkbox checked="{{allowDisableParams}}">Allow disabling parameters</paper-checkbox>
+          <paper-checkbox checked="{{allowCustom}}">Allow custom parameters</paper-checkbox>
+        </section>
       </template>
     </dom-bind>
     <script>
