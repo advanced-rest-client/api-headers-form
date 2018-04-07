@@ -20,15 +20,12 @@
     <style include="markdown-styles">
     :host {
       display: block;
-      @apply --raml-headers-form-item;
       @apply --api-headers-form-item;
     }
 
     .form-row {
       @apply --layout-horizontal;
       @apply --layout-center;
-      @apply --raml-request-parameters-editor-row;
-      @apply --api-request-parameters-editor-row;
     }
 
     .value-field,
@@ -54,19 +51,15 @@
 
     .param-name {
       margin-right: 12px;
-      @apply --raml-headers-form-name-input;
       @apply --api-headers-form-name-input;
     }
 
-    .narrow.form-row {
+    :host([narrow]) .form-row {
       display: block;
-      @apply --raml-request-parameters-editor-row-narrow;
-      @apply --api-request-parameters-editor-row-narrow;
     }
 
-    .narrow .param-name {
+    :host([narrow]) .param-name {
       margin-right: 0;
-      @apply --raml-headers-form-name-input-narrow;
       @apply --api-headers-form-name-input-narrow;
     }
 
@@ -76,12 +69,15 @@
 
     :host([is-array]) .value-field {
       @apply --layout-start;
-      @apply --raml-headers-form-array-parameter;
       @apply --api-headers-form-array-parameter;
     }
 
     paper-icon-button {
-      margin-top: 16px;
+      margin-top: var(--api-headers-editore-hint-icon-margin-top, 16px);
+    }
+
+    :host([narrow]) paper-icon-button {
+      margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
     }
     </style>
     <template is="dom-if" if="[[!isCustom]]">
@@ -93,7 +89,7 @@
       </div>
     </template>
     <template is="dom-if" if="[[isCustom]]">
-      <div class$="form-row [[_computeNarrowClass(narrow)]]">
+      <div class$="form-row">
         <div class="name-field">
           <paper-input
             value="{{name}}"
@@ -185,7 +181,8 @@
          */
         narrow: {
           type: Boolean,
-          value: false
+          value: false,
+          reflectToAttribute: true
         },
         /**
          * True to render documentation (if set in model)
@@ -283,16 +280,6 @@
       });
       this.dispatchEvent(ev);
       return ev.detail.headers;
-    }
-
-    /**
-     * Computes css class name for narrow layout
-     *
-     * @param {Boolean} narrow Value of the `narrow` property.
-     * @return {String} Class definition.
-     */
-    _computeNarrowClass(narrow) {
-      return narrow ? 'narrow' : '';
     }
 
     _getValidity() {
