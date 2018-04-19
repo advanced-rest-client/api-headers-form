@@ -20,15 +20,12 @@
     <style include="markdown-styles">
     :host {
       display: block;
-      @apply --raml-headers-form-item;
       @apply --api-headers-form-item;
     }
 
     .form-row {
       @apply --layout-horizontal;
       @apply --layout-center;
-      @apply --raml-request-parameters-editor-row;
-      @apply --api-request-parameters-editor-row;
     }
 
     .value-field,
@@ -54,19 +51,15 @@
 
     .param-name {
       margin-right: 12px;
-      @apply --raml-headers-form-name-input;
       @apply --api-headers-form-name-input;
     }
 
-    .narrow.form-row {
+    :host([narrow]) .form-row {
       display: block;
-      @apply --raml-request-parameters-editor-row-narrow;
-      @apply --api-request-parameters-editor-row-narrow;
     }
 
-    .narrow .param-name {
+    :host([narrow]) .param-name {
       margin-right: 0;
-      @apply --raml-headers-form-name-input-narrow;
       @apply --api-headers-form-name-input-narrow;
     }
 
@@ -76,12 +69,15 @@
 
     :host([is-array]) .value-field {
       @apply --layout-start;
-      @apply --raml-headers-form-array-parameter;
       @apply --api-headers-form-array-parameter;
     }
 
     paper-icon-button {
-      margin-top: 16px;
+      margin-top: var(--api-headers-editore-hint-icon-margin-top, 16px);
+    }
+
+    :host([narrow]) paper-icon-button {
+      margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
     }
     </style>
     <template is="dom-if" if="[[!isCustom]]">
@@ -93,7 +89,7 @@
       </div>
     </template>
     <template is="dom-if" if="[[isCustom]]">
-      <div class$="form-row [[_computeNarrowClass(narrow)]]">
+      <div class="form-row">
         <div class="name-field">
           <paper-input
             value="{{name}}"
@@ -110,7 +106,8 @@
             horizontal-align="left"
             vertical-offset="56"
             open-on-focus on-query="_queryHeaderName"
-            on-selected="_onHeaderNameSelected"></paper-autocomplete>
+            on-selected="_onHeaderNameSelected"
+            opened="{{suggestionsOpened}}"></paper-autocomplete>
         </div>
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
@@ -163,9 +160,7 @@
         /**
          * View model for the headers.
          */
-        model: {
-          type: Array
-        },
+        model: Array,
         /**
          * The name of this element.
          */
@@ -186,7 +181,8 @@
          */
         narrow: {
           type: Boolean,
-          value: false
+          value: false,
+          reflectToAttribute: true
         },
         /**
          * True to render documentation (if set in model)
@@ -216,7 +212,11 @@
         // Reference to header value input.
         _valueInput: Object,
         // True when this model is required
-        required: Boolean
+        required: Boolean,
+        /**
+         * True when suggestions popover is opened
+         */
+        suggestionsOpened: Boolean
       };
     }
 
@@ -282,21 +282,11 @@
       return ev.detail.headers;
     }
 
-    /**
-     * Computes css class name for narrow layout
-     *
-     * @param {Boolean} narrow Value of the `narrow` property.
-     * @return {String} Class definition.
-     */
-    _computeNarrowClass(narrow) {
-      return narrow ? 'narrow' : '';
-    }
-
     _getValidity() {
-      var selector = 'raml-type-form-input[data-type="';
+      let selector = 'api-property-form-item[data-type="';
       selector += this.isCustom ? 'custom' : 'typed';
       selector += '"]';
-      var input = this.shadowRoot.querySelector(selector);
+      const input = this.shadowRoot.querySelector(selector);
       return input.validate();
     }
     /**
@@ -305,14 +295,16 @@
      * @param {String} name Header name
      */
     _nameChanged(name) {
-      var model = this.model;
+      const model = this.model;
       if (!name || !model || !model.schema || model.schema.isEnum) {
         this._updateValueAutocomplete();
+        this._updateHeaderDocs();
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
         const info = this._queryHeaderNameSuggestions(name);
         this._updateValueAutocomplete(info);
+        this._updateHeaderDocs(info);
       });
     }
     /**
@@ -366,6 +358,33 @@
       } else {
         this.valueSuggestions = undefined;
       }
+    }
+    /**
+     * Updates header description if the header doesn't contain a description
+     * already.
+     */
+    _updateHeaderDocs(info) {
+      if (this.suggestionsOpened) {
+        return;
+      }
+      const model = this.model;
+      if (!model) {
+        return;
+      }
+      if (!info || info.length !== 1) {
+        if (model.hasDescription && model.__ownDescription) {
+          this.set('model.description', undefined);
+          this.set('model.hasDescription', false);
+          this.model.__ownDescription = false;
+        }
+        return;
+      }
+      if (model.hasDescription) {
+        return;
+      }
+      this.set('model.description', info[0].desc);
+      this.set('model.hasDescription', true);
+      this.model.__ownDescription = true;
     }
 
     /**
