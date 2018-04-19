@@ -9,12 +9,15 @@
  */
 
 /// <reference path="../polymer/types/polymer-element.d.ts" />
+/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
 /// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
 /// <reference path="../iron-form/iron-form.d.ts" />
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
 /// <reference path="../arc-icons/arc-icons.d.ts" />
 /// <reference path="../arc-definitions/arc-definitions.d.ts" />
 /// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
+/// <reference path="../api-form-mixin/api-form-mixin.d.ts" />
+/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
 /// <reference path="api-headers-form-item.d.ts" />
 
 /**
@@ -66,41 +69,22 @@
  *
  * ## Changes in v2
  *
- * * The component won't listen for `headers-value-changed` custom event.
+ * The component won't listen for `headers-value-changed` custom event.
  * Components / applications using this element should handle headers change
  * event in the application and generate new model for the view.
- * * Setting `value` makes no effect on the element. Only way to change
+ * Setting `value` makes no effect on the element. Only way to change
  * generated UI is to change the model.
  */
 declare class ApiHeadersForm extends
   Polymer.IronValidatableBehavior(
-  Polymer.Element) {
-
-  /**
-   * View model for the headers.
-   */
-  model: any[]|null|undefined;
+  ArcBehaviors.ApiFormMixin(
+  Polymer.Element)) {
 
   /**
    * Current value of the headers. Changing the value will update the list
    * of the headers.
    */
   value: string|null|undefined;
-
-  /**
-   * If set, custom headers won't be available.
-   */
-  disallowCustom: boolean|null|undefined;
-
-  /**
-   * If set it renders a narrow layout
-   */
-  narrow: boolean|null|undefined;
-
-  /**
-   * Handler for the remove button click.
-   */
-  _removeHeader(e: CustomEvent|null): void;
 
   /**
    * Appends an empty header to the list.

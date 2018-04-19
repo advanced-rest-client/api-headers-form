@@ -19,11 +19,11 @@
 /// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
 /// <reference path="../paper-input/paper-input.d.ts" />
 /// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../paper-tooltip/paper-tooltip.d.ts" />
 /// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
 /// <reference path="../marked-element/marked-element.d.ts" />
 /// <reference path="../markdown-styles/markdown-styles.d.ts" />
 /// <reference path="../paper-autocomplete/paper-autocomplete.d.ts" />
+/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
 
 /**
  * Headers form item.
@@ -82,6 +82,11 @@ declare class ApiHeadersFormItem extends
    * Reference to header value input.
    */
   _valueInput: object|null|undefined;
+
+  /**
+   * True when this model is required
+   */
+  required: boolean|null|undefined;
   _getValidity(): any;
 
   /**
