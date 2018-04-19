@@ -1,0 +1,33 @@
+
+#%RAML 1.0
+title: API headers demo
+version: v1
+baseUri: http://domain.com/
+
+/people:
+  get:
+    displayName: List people
+    headers:
+      x-people-op-id:
+        type: string
+        pattern: ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[4][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$
+        description: People ops ID. It is UUID v4 string
+        example: 9719fa6f-c666-48e0-a191-290890760b30
+      X-Frame-Options:
+        type: string
+        examples:
+          Deny: DENY
+          SameOrigin: SAMEORIGIN
+      x-client-id:
+        example: 123456-acme.client.com
+        description: The application id used to make a request. It can be obtained in the developer console.
+        type: string
+        required: true
+      x-enum:
+        type: string
+        enum: [one, two, three]
+        required: false
+      x-default:
+        type: string
+        default: test
+      x-integer: integer

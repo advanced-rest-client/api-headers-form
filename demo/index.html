@@ -25,28 +25,25 @@
     <dom-bind id="demo">
       <template is="dom-bind">
         <div class="vertical-section-container">
-          <api-view-model-transformer amf-model="[[amfModel]]" on-view-model-changed="_updateView"></api-view-model-transformer>
-          <api-headers-form model="{{viewModel}}" value="{{headers}}" allow-disable-params allow-custom allow-hide-optional></api-headers-form>
+          <api-view-model-transformer amf-model="[[amfModel]]" shape="[[amfHeaders]]" view-model="{{viewModel}}"></api-view-model-transformer>
+          <api-headers-form value="{{headers}}" model="[[viewModel]]" allow-disable-params allow-custom allow-hide-optional></api-headers-form>
           <output>[[headers]]</output>
         </div>
       </template>
     </dom-bind>
     <script>
     (function(scope) {
-      scope._updateView = function(e) {
-        let form = document.querySelector('api-headers-form');
-        form.model = e.detail.value;
-      };
       scope._load = function() {
-        fetch('./headers-model.json')
+        fetch('./headers-api.json')
         .then((response) => response.json())
         .then((data) => {
+          scope.amfModel = data;
           data = data[0]['http://raml.org/vocabularies/document#encodes'][0];
           data = data['http://raml.org/vocabularies/http#endpoint'][0];
           data = data['http://www.w3.org/ns/hydra/core#supportedOperation'][0];
           data = data['http://www.w3.org/ns/hydra/core#expects'][0];
           data = data['http://raml.org/vocabularies/http#header'];
-          scope.amfModel = data;
+          scope.amfHeaders = data;
         });
       };
       window.addEventListener('WebComponentsReady', function() {
