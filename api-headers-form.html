@@ -240,6 +240,7 @@
         return n + ': ' + v;
       }).filter((item) => !!item).join('\n');
       this.set('value', value);
+      this.validate();
     }
     /**
      * Adds documentation for headers that doesn't have it already.
@@ -284,7 +285,8 @@
     }
 
     _getValidity() {
-      return this.shadowRoot.querySelector('iron-form').validate();
+      const form = this.shadowRoot && this.shadowRoot.querySelector('iron-form');
+      return form ? form.validate() : true;
     }
   }
 
