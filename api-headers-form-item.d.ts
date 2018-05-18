@@ -8,23 +8,6 @@
  *   api-headers-form-item.html
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
-/// <reference path="../paper-input/paper-input.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
-/// <reference path="../marked-element/marked-element.d.ts" />
-/// <reference path="../markdown-styles/markdown-styles.d.ts" />
-/// <reference path="../paper-autocomplete/paper-autocomplete.d.ts" />
-/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
-
 /**
  * Headers form item.
  *
@@ -87,7 +70,11 @@ declare class ApiHeadersFormItem extends
    * True when this model is required
    */
   required: boolean|null|undefined;
-  _getValidity(): any;
+
+  /**
+   * True when suggestions popover is opened
+   */
+  suggestionsOpened: boolean|null|undefined;
 
   /**
    * Toggles documentation (if available)
@@ -122,14 +109,7 @@ declare class ApiHeadersFormItem extends
    * @returns Headers definition or empty array
    */
   _queryHeaderNameSuggestions(q: String|null): any[]|null;
-
-  /**
-   * Computes css class name for narrow layout
-   *
-   * @param narrow Value of the `narrow` property.
-   * @returns Class definition.
-   */
-  _computeNarrowClass(narrow: Boolean|null): String|null;
+  _getValidity(): any;
 
   /**
    * Updates value suggestions for custom values.
@@ -152,6 +132,12 @@ declare class ApiHeadersFormItem extends
    * @param headers List of received headers from headers query
    */
   _updateValueAutocomplete(headers: Array<object|null>|null): void;
+
+  /**
+   * Updates header description if the header doesn't contain a description
+   * already.
+   */
+  _updateHeaderDocs(info: any): void;
 
   /**
    * A handler called when the user selects a value suggestion.

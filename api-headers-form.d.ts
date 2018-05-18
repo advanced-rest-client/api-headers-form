@@ -8,16 +8,6 @@
  *   api-headers-form.html
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../iron-form/iron-form.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../arc-definitions/arc-definitions.d.ts" />
-/// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
-/// <reference path="../api-form-mixin/api-form-mixin.d.ts" />
-/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
 /// <reference path="api-headers-form-item.d.ts" />
 
 /**
@@ -74,6 +64,24 @@
  * event in the application and generate new model for the view.
  * Setting `value` makes no effect on the element. Only way to change
  * generated UI is to change the model.
+ *
+ * ## Styling
+ *
+ * Custom property | Description | Default
+ * ----------------|-------------|----------
+ * `--api-headers-form` | Mixin applied to this element | `{}`
+ * `--api-headers-form-delete-icon-margin-top` | Margin top of the delete button | `16px`
+ * `--api-headers-form-delete-icon-margin-top-narrow` | Margin top of the delete button in narrow layout | `16px`
+ * `--api-headers-form-enable-checkbox-margin-top` | Margin top of the enable checkbox | `32px`
+ * `--api-headers-form-enable-checkbox-margin-top` | Margin top of the enable checkbox in narrow layout | `32px`
+ * `--api-headers-form-item` | Mixin applied to each form item. Each for item is separate element. | `{}`
+ * `--api-headers-editore-hint-icon-margin-top` | Margin top of help icon. | `16px`
+ * `--api-headers-editore-hint-icon-margin-top-narrow` | Margin top of help icon in narrow layout. | `16px`
+ * `--api-headers-form-name-input` | Mixin applied to header name input | `{}`
+ * `--api-headers-form-name-input-narrow` | Mixin applied to header name input in narrow layout | `{}`
+ * `--api-headers-form-array-parameter` | Mixin applied to the value input when the input is an array | `{}`
+ *
+ * See `api-headers-form-item` and `api-form-mixin/api-form-styles` for more styling API.
  */
 declare class ApiHeadersForm extends
   Polymer.IronValidatableBehavior(
@@ -119,6 +127,7 @@ declare class ApiHeadersForm extends
    * @returns Header definition or undefined.
    */
   _queryHeaderData(name: String|null): object|null|undefined;
+  _getValidity(): any;
 }
 
 interface HTMLElementTagNameMap {

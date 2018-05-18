@@ -1,12 +1,11 @@
 {
   "name": "@api-components/api-headers-form",
-  "version": "2.0.0-preview",
+  "version": "2.0.0",
   "description": "HTTP headers form build from AMF json/ld model",
   "main": "api-headers-form.html",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@polymer/gen-typescript-declarations": "^1.1.1",
-    "amf-client-js": "^1.4.0-6"
+    "@polymer/gen-typescript-declarations": "^1.1.1"
   },
   "private": false,
   "scripts": {
