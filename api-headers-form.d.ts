@@ -8,13 +8,6 @@
  *   api-headers-form.html
  */
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../iron-form/iron-form.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../arc-definitions/arc-definitions.d.ts" />
-/// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
 /// <reference path="api-headers-form-item.d.ts" />
 
 /**
@@ -66,41 +59,40 @@
  *
  * ## Changes in v2
  *
- * * The component won't listen for `headers-value-changed` custom event.
+ * The component won't listen for `headers-value-changed` custom event.
  * Components / applications using this element should handle headers change
  * event in the application and generate new model for the view.
- * * Setting `value` makes no effect on the element. Only way to change
+ * Setting `value` makes no effect on the element. Only way to change
  * generated UI is to change the model.
+ *
+ * ## Styling
+ *
+ * Custom property | Description | Default
+ * ----------------|-------------|----------
+ * `--api-headers-form` | Mixin applied to this element | `{}`
+ * `--api-headers-form-delete-icon-margin-top` | Margin top of the delete button | `16px`
+ * `--api-headers-form-delete-icon-margin-top-narrow` | Margin top of the delete button in narrow layout | `16px`
+ * `--api-headers-form-enable-checkbox-margin-top` | Margin top of the enable checkbox | `32px`
+ * `--api-headers-form-enable-checkbox-margin-top` | Margin top of the enable checkbox in narrow layout | `32px`
+ * `--api-headers-form-item` | Mixin applied to each form item. Each for item is separate element. | `{}`
+ * `--api-headers-editore-hint-icon-margin-top` | Margin top of help icon. | `16px`
+ * `--api-headers-editore-hint-icon-margin-top-narrow` | Margin top of help icon in narrow layout. | `16px`
+ * `--api-headers-form-name-input` | Mixin applied to header name input | `{}`
+ * `--api-headers-form-name-input-narrow` | Mixin applied to header name input in narrow layout | `{}`
+ * `--api-headers-form-array-parameter` | Mixin applied to the value input when the input is an array | `{}`
+ *
+ * See `api-headers-form-item` and `api-form-mixin/api-form-styles` for more styling API.
  */
 declare class ApiHeadersForm extends
   Polymer.IronValidatableBehavior(
-  Polymer.Element) {
-
-  /**
-   * View model for the headers.
-   */
-  model: any[]|null|undefined;
+  ArcBehaviors.ApiFormMixin(
+  Polymer.Element)) {
 
   /**
    * Current value of the headers. Changing the value will update the list
    * of the headers.
    */
   value: string|null|undefined;
-
-  /**
-   * If set, custom headers won't be available.
-   */
-  disallowCustom: boolean|null|undefined;
-
-  /**
-   * If set it renders a narrow layout
-   */
-  narrow: boolean|null|undefined;
-
-  /**
-   * Handler for the remove button click.
-   */
-  _removeHeader(e: CustomEvent|null): void;
 
   /**
    * Appends an empty header to the list.
@@ -135,6 +127,7 @@ declare class ApiHeadersForm extends
    * @returns Header definition or undefined.
    */
   _queryHeaderData(name: String|null): object|null|undefined;
+  _getValidity(): any;
 }
 
 interface HTMLElementTagNameMap {

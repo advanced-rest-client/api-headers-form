@@ -13,60 +13,21 @@
 <link rel="import" href="../marked-element/marked-element.html">
 <link rel="import" href="../markdown-styles/markdown-styles.html">
 <link rel="import" href="../paper-autocomplete/paper-autocomplete.html">
-
+<link rel="import" href="../api-form-mixin/api-form-styles.html">
 <dom-module id="api-headers-form-item">
   <template strip-whitespace>
+    <style include="api-form-styles"></style>
     <style include="markdown-styles">
     :host {
       display: block;
-      @apply --raml-headers-form-item;
       @apply --api-headers-form-item;
-
-      --paper-input-container-label: {
-        color: var(--api-headers-form-input-label-color, var(--raml-headers-form-input-label-color, var(--raml-request-parameters-editor-input-label-color, rgba(0, 0, 0, 0.54))));
-      }
-    }
-
-    :host([required]) paper-input {
-      --paper-input-container-label: {
-        color: var(--api-headers-form-input-label-color-required, var(--raml-headers-form-input-label-color-required, var(--raml-request-parameters-editor-required-input-label-color, rgba(0, 0, 0, 0.72))));
-      }
     }
 
     .form-row {
       @apply --layout-horizontal;
       @apply --layout-center;
-      @apply --raml-request-parameters-editor-row;
-      @apply --api-request-parameters-editor-row;
     }
 
-    .markdown-html p:first-child {
-      margin-top: 0;
-      padding-top: 0;
-    }
-
-    .markdown-html p:last-child {
-      margin-bottom: 0;
-      padding-bottom: 0;
-    }
-
-    .docs {
-      @apply --arc-font-common-base;
-      font-size: 13px !important;
-      font-weight: 200;
-      line-height: 24px;
-      color: var(--inline-documentation-color, rgba(0, 0, 0, 0.87));
-    }
-
-    .help-icon {
-      margin-top: 16px;
-      color: var(--from-row-action-icon-color, var(--icon-button-color, rgba(0, 0, 0, 0.74)));
-      transition: color 0.2s linear;
-    }
-
-    .help-icon:hover {
-      color: var(--from-row-action-icon-color-hover, var(--accent-color, rgba(0, 0, 0, 0.74)));
-    }
     .value-field,
     .name-field {
       position: relative;
@@ -90,19 +51,15 @@
 
     .param-name {
       margin-right: 12px;
-      @apply --raml-headers-form-name-input;
       @apply --api-headers-form-name-input;
     }
 
-    .narrow.form-row {
+    :host([narrow]) .form-row {
       display: block;
-      @apply --raml-request-parameters-editor-row-narrow;
-      @apply --api-request-parameters-editor-row-narrow;
     }
 
-    .narrow .param-name {
+    :host([narrow]) .param-name {
       margin-right: 0;
-      @apply --raml-headers-form-name-input-narrow;
       @apply --api-headers-form-name-input-narrow;
     }
 
@@ -112,25 +69,27 @@
 
     :host([is-array]) .value-field {
       @apply --layout-start;
-      @apply --raml-headers-form-array-parameter;
       @apply --api-headers-form-array-parameter;
     }
 
-    marked-element {
-      background-color: var(--inline-documentation-background-color, #FFF3E0);
-      padding: 4px;
+    paper-icon-button {
+      margin-top: var(--api-headers-editore-hint-icon-margin-top, 16px);
+    }
+
+    :host([narrow]) paper-icon-button {
+      margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
     }
     </style>
     <template is="dom-if" if="[[!isCustom]]">
       <div class="value-field">
-        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
-        <template is="dom-if" if="[[_hasDocumentation]]">
-          <paper-icon-button class="help-icon" icon="arc:help" on-tap="toggleDocumentation" title="Display documentation"></paper-icon-button>
+        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
+        <template is="dom-if" if="[[model.hasDescription]]">
+          <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
         </template>
       </div>
     </template>
     <template is="dom-if" if="[[isCustom]]">
-      <div class$="form-row [[_computeNarrowClass(narrow)]]">
+      <div class="form-row">
         <div class="name-field">
           <paper-input
             value="{{name}}"
@@ -143,21 +102,25 @@
             required></paper-input>
           <paper-autocomplete
             dynamic-align
+            vertical-align="bottom"
+            horizontal-align="left"
+            vertical-offset="56"
             open-on-focus on-query="_queryHeaderName"
-            on-selected="_onHeaderNameSelected"></paper-autocomplete>
+            on-selected="_onHeaderNameSelected"
+            opened="{{suggestionsOpened}}"></paper-autocomplete>
         </div>
         <div class="value-field">
           <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
-          <template is="dom-if" if="[[_hasDocumentation]]">
-            <paper-icon-button class="help-icon" icon="arc:help" on-tap="toggleDocumentation" title="Display documentation"></paper-icon-button>
+          <template is="dom-if" if="[[model.hasDescription]]">
+            <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
           </template>
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[_hasDocumentation]]" restamp>
+    <template is="dom-if" if="[[model.hasDescription]]" restamp>
       <div class="docs">
         <iron-collapse opened="[[docsOpened]]">
-          <marked-element markdown="[[_computeDocumentation(model)]]">
+          <marked-element markdown="[[model.description]]">
             <div slot="markdown-html" class="markdown-body"></div>
           </marked-element>
         </iron-collapse>
@@ -197,9 +160,7 @@
         /**
          * View model for the headers.
          */
-        model: {
-          type: Array
-        },
+        model: Array,
         /**
          * The name of this element.
          */
@@ -220,7 +181,8 @@
          */
         narrow: {
           type: Boolean,
-          value: false
+          value: false,
+          reflectToAttribute: true
         },
         /**
          * True to render documentation (if set in model)
@@ -249,11 +211,12 @@
         valueSuggestions: Array,
         // Reference to header value input.
         _valueInput: Object,
-
-        _hasDocumentation: {
-          type: Boolean,
-          computed: '_computeHasDocumentation(model)'
-        }
+        // True when this model is required
+        required: Boolean,
+        /**
+         * True when suggestions popover is opened
+         */
+        suggestionsOpened: Boolean
       };
     }
 
@@ -319,21 +282,11 @@
       return ev.detail.headers;
     }
 
-    /**
-     * Computes css class name for narrow layout
-     *
-     * @param {Boolean} narrow Value of the `narrow` property.
-     * @return {String} Class definition.
-     */
-    _computeNarrowClass(narrow) {
-      return narrow ? 'narrow' : '';
-    }
-
     _getValidity() {
-      var selector = 'raml-type-form-input[data-type="';
+      let selector = 'api-property-form-item[data-type="';
       selector += this.isCustom ? 'custom' : 'typed';
       selector += '"]';
-      var input = this.shadowRoot.querySelector(selector);
+      const input = this.shadowRoot.querySelector(selector);
       return input.validate();
     }
     /**
@@ -342,14 +295,16 @@
      * @param {String} name Header name
      */
     _nameChanged(name) {
-      var model = this.model;
+      const model = this.model;
       if (!name || !model || !model.schema || model.schema.isEnum) {
         this._updateValueAutocomplete();
+        this._updateHeaderDocs();
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
         const info = this._queryHeaderNameSuggestions(name);
         this._updateValueAutocomplete(info);
+        this._updateHeaderDocs(info);
       });
     }
     /**
@@ -404,6 +359,33 @@
         this.valueSuggestions = undefined;
       }
     }
+    /**
+     * Updates header description if the header doesn't contain a description
+     * already.
+     */
+    _updateHeaderDocs(info) {
+      if (this.suggestionsOpened) {
+        return;
+      }
+      const model = this.model;
+      if (!model) {
+        return;
+      }
+      if (!info || info.length !== 1) {
+        if (model.hasDescription && model.__ownDescription) {
+          this.set('model.description', undefined);
+          this.set('model.hasDescription', false);
+          this.model.__ownDescription = false;
+        }
+        return;
+      }
+      if (model.hasDescription) {
+        return;
+      }
+      this.set('model.description', info[0].desc);
+      this.set('model.hasDescription', true);
+      this.model.__ownDescription = true;
+    }
 
     /**
      * A handler called when the user selects a value suggestion.
@@ -426,68 +408,6 @@
         this.__closingAutocomplete = false;
         this.shadowRoot.querySelector('.value-autocomplete').opened = false;
       }, 250);
-    }
-
-    /**
-     * Computes documentation as a markdown to be placed in the `marked-element`
-     * @param {Object} item View model
-     */
-    _computeDocumentation(item) {
-      if (!item) {
-        return;
-      }
-      let docs = '';
-      if (item.description) {
-        docs += item.description;
-      }
-      if (!item.schema) {
-        return docs;
-      }
-      const schema = item.schema;
-      docs += '\n\n\n';
-      if (schema.pattern) {
-        docs += '- Pattern: `' + schema.pattern + '`\n';
-      }
-      if (schema.examples && schema.examples.length) {
-        schema.examples.forEach((item) => {
-          docs += '- Example';
-          if (typeof item === 'string') {
-            docs += ': `' + item.value + '`\n';
-            return;
-          } else {
-            if (item.hasName) {
-              docs += ' ' + item.name;
-            }
-            docs += ': `' + item.value + '`\n';
-          }
-        });
-      }
-      return docs;
-    }
-    /**
-     * Computes if model item has documentation to display.
-     *
-     * @param {Object} item Model item
-     * @return {Boolean} True if documentation can be rendered.
-     */
-    _computeHasDocumentation(item) {
-      if (!item) {
-        return;
-      }
-      if (item.hasDescription) {
-        return true;
-      }
-      if (!item.schema) {
-        return false;
-      }
-      const schema = item.schema;
-      if (schema.pattern) {
-        return true;
-      }
-      if (schema.examples && schema.examples.length) {
-        return true;
-      }
-      return false;
     }
   }
 
