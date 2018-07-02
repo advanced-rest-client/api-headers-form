@@ -65,8 +65,9 @@
               <template is="dom-if" if="[[allowDisableParams]]">
                 <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable or disable this header"></paper-checkbox>
               </template>
-              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]" no-docs="[[noDocs]]"></api-headers-form-item>
-              <paper-icon-button title="Removes header from the form" class="action-icon delete-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom"></paper-icon-button>
+              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]" no-docs="[[noDocs]]">
+                <paper-icon-button title="Removes header from the form" class="action-icon delete-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom" slot="suffix"></paper-icon-button>
+              </api-headers-form-item>
             </div>
           </template>
         </dom-repeat>
