@@ -152,9 +152,7 @@
    * @appliesMixin Polymer.IronValidatableBehavior
    */
   class ApiHeadersFormItem extends Polymer.mixinBehaviors(Polymer.IronValidatableBehavior, Polymer.Element) {
-    static get is() {
-      return 'api-headers-form-item';
-    }
+    static get is() { return 'api-headers-form-item'; }
     static get properties() {
       return {
         /**
@@ -216,7 +214,14 @@
         /**
          * True when suggestions popover is opened
          */
-        suggestionsOpened: Boolean
+        suggestionsOpened: Boolean,
+        /**
+         * Prohibits rendering of the documentation (the icon and the
+         * description).
+         * Note, Set is separately for `api-view-model-transformer`
+         * component as this only affects "custom" items.
+         */
+        noDocs: Boolean
       };
     }
 
@@ -298,13 +303,17 @@
       const model = this.model;
       if (!name || !model || !model.schema || model.schema.isEnum) {
         this._updateValueAutocomplete();
-        this._updateHeaderDocs();
+        if (!this.noDocs) {
+          this._updateHeaderDocs();
+        }
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
         const info = this._queryHeaderNameSuggestions(name);
         this._updateValueAutocomplete(info);
-        this._updateHeaderDocs(info);
+        if (!this.noDocs) {
+          this._updateHeaderDocs(info);
+        }
       });
     }
     /**
@@ -364,7 +373,7 @@
      * already.
      */
     _updateHeaderDocs(info) {
-      if (this.suggestionsOpened) {
+      if (this.suggestionsOpened || this.noDocs) {
         return;
       }
       const model = this.model;
