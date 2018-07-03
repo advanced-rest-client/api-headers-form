@@ -19,39 +19,76 @@
         background-color: #FFF3E0;
         white-space: pre-wrap;
       }
+
+      h1 {
+        @apply --paper-font-display1;
+      }
+
+      h2 {
+        @apply --paper-font-title;
+      }
+
+      .config {
+        padding: 12px;
+        border: 1px #cccccc solid;
+        background-color: #ececec;
+      }
+
+      .config paper-checkbox {
+        margin-bottom: 12px;
+      }
       </style>
     </custom-style>
   </head>
   <body>
     <dom-bind id="demo">
       <template is="dom-bind">
-        <div class="vertical-section-container">
-          <api-view-model-transformer amf-model="[[amfModel]]" shape="[[amfHeaders]]" view-model="{{viewModel}}"></api-view-model-transformer>
-          <api-headers-form value="{{headers}}" model="[[viewModel]]" narrow="[[narrow]]" allow-disable-params="[[allowDisableParams]]" allow-custom="[[allowCustom]]" allow-hide-optional="[[allowHideOptional]]"></api-headers-form>
-          <output>[[headers]]</output>
-        </section>
-        <section class="vertical-section-container centered">
+        <h1 class="vertical-section-container centered">API headers form</h1>
+        <section class="vertical-section-container centered config">
+          <h2>Configuration options</h2>
           <paper-checkbox checked="{{narrow}}">Render narrow view</paper-checkbox>
           <paper-checkbox checked="{{allowHideOptional}}">Allow auto hide optional headers</paper-checkbox>
           <paper-checkbox checked="{{allowDisableParams}}">Allow disabling parameters</paper-checkbox>
           <paper-checkbox checked="{{allowCustom}}">Allow custom parameters</paper-checkbox>
+          <paper-checkbox checked="{{noDocs}}" on-checked-changed="_updateModel">Disable documentation rendering</paper-checkbox>
+        </section>
+        <div class="vertical-section-container centered">
+          <h2>The editor</h2>
+          <api-view-model-transformer amf-model="[[amfModel]]" shape="[[amfHeaders]]" view-model="{{viewModel}}" no-docs="[[noDocs]]"></api-view-model-transformer>
+          <api-headers-form value="{{headers}}" model="[[viewModel]]" narrow="[[narrow]]" allow-disable-params="[[allowDisableParams]]" allow-custom="[[allowCustom]]" allow-hide-optional="[[allowHideOptional]]" no-docs="[[noDocs]]"></api-headers-form>
+          <output>[[headers]]</output>
         </section>
       </template>
     </dom-bind>
     <script>
     (function(scope) {
+      scope._setHeaders = function() {
+        const ns = ApiElements.Amf.ns;
+        let data = scope.amfModel;
+        data = data[0][ns.raml.vocabularies.document + 'encodes'][0];
+        data = data[ns.raml.vocabularies.http + 'endpoint'][0];
+        data = data[ns.w3.hydra.core + 'supportedOperation'][0];
+        data = data[ns.w3.hydra.core + 'expects'][0];
+        data = data[ns.raml.vocabularies.http + 'header'];
+        scope.amfHeaders = data;
+      };
       scope._load = function() {
         fetch('./headers-api.json')
         .then((response) => response.json())
         .then((data) => {
           scope.amfModel = data;
-          data = data[0]['http://raml.org/vocabularies/document#encodes'][0];
-          data = data['http://raml.org/vocabularies/http#endpoint'][0];
-          data = data['http://www.w3.org/ns/hydra/core#supportedOperation'][0];
-          data = data['http://www.w3.org/ns/hydra/core#expects'][0];
-          data = data['http://raml.org/vocabularies/http#header'];
-          scope.amfHeaders = data;
+          scope._setHeaders();
         });
+      };
+      scope._updateModel = function() {
+        if (!scope.amfModel) {
+          return;
+        }
+        scope.amfHeaders = undefined;
+        document.querySelector('api-view-model-transformer').clearCache();
+        setTimeout(() => {
+          scope._setHeaders();
+        }, 1);
       };
       window.addEventListener('WebComponentsReady', function() {
         scope._load();

@@ -8,6 +8,23 @@
  *   api-headers-form-item.html
  */
 
+/// <reference path="../polymer/types/polymer-element.d.ts" />
+/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
+/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
+/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
+/// <reference path="../paper-button/paper-button.d.ts" />
+/// <reference path="../arc-icons/arc-icons.d.ts" />
+/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
+/// <reference path="../iron-collapse/iron-collapse.d.ts" />
+/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
+/// <reference path="../paper-input/paper-input.d.ts" />
+/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
+/// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
+/// <reference path="../marked-element/marked-element.d.ts" />
+/// <reference path="../markdown-styles/markdown-styles.d.ts" />
+/// <reference path="../paper-autocomplete/paper-autocomplete.d.ts" />
+/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
+
 /**
  * Headers form item.
  *
@@ -21,7 +38,7 @@ declare class ApiHeadersFormItem extends
   /**
    * View model for the headers.
    */
-  model: any[]|null|undefined;
+  model: object|null|undefined;
 
   /**
    * The name of this element.
@@ -77,6 +94,15 @@ declare class ApiHeadersFormItem extends
   suggestionsOpened: boolean|null|undefined;
 
   /**
+   * Prohibits rendering of the documentation (the icon and the
+   * description).
+   * Note, Set is separately for `api-view-model-transformer`
+   * component as this only affects "custom" items.
+   */
+  noDocs: boolean|null|undefined;
+  _getValidity(): any;
+
+  /**
    * Toggles documentation (if available)
    */
   toggleDocumentation(): void;
@@ -109,7 +135,6 @@ declare class ApiHeadersFormItem extends
    * @returns Headers definition or empty array
    */
   _queryHeaderNameSuggestions(q: String|null): any[]|null;
-  _getValidity(): any;
 
   /**
    * Updates value suggestions for custom values.

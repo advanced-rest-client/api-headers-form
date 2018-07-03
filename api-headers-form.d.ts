@@ -8,6 +8,16 @@
  *   api-headers-form.html
  */
 
+/// <reference path="../polymer/types/polymer-element.d.ts" />
+/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
+/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
+/// <reference path="../iron-form/iron-form.d.ts" />
+/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
+/// <reference path="../arc-icons/arc-icons.d.ts" />
+/// <reference path="../arc-definitions/arc-definitions.d.ts" />
+/// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
+/// <reference path="../api-form-mixin/api-form-mixin.d.ts" />
+/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
 /// <reference path="api-headers-form-item.d.ts" />
 
 /**
@@ -95,6 +105,15 @@ declare class ApiHeadersForm extends
   value: string|null|undefined;
 
   /**
+   * Prohibits rendering of the documentation (the icon and the
+   * description).
+   * Note, Set is separately for `api-view-model-transformer`
+   * component as this only affects "custom" items.
+   */
+  noDocs: boolean|null|undefined;
+  _getValidity(): any;
+
+  /**
    * Appends an empty header to the list.
    */
   add(): void;
@@ -127,7 +146,6 @@ declare class ApiHeadersForm extends
    * @returns Header definition or undefined.
    */
   _queryHeaderData(name: String|null): object|null|undefined;
-  _getValidity(): any;
 }
 
 interface HTMLElementTagNameMap {

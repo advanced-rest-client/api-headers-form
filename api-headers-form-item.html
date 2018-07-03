@@ -26,6 +26,7 @@
     .form-row {
       @apply --layout-horizontal;
       @apply --layout-center;
+      @apply --layout-flex;
     }
 
     .value-field,
@@ -79,41 +80,57 @@
     :host([narrow]) paper-icon-button {
       margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
     }
+
+    .custom-wrapper {
+      @apply --layout-horizontal;
+      @apply --layout-start;
+    }
+
+    .docs {
+      margin-right: 0;
+    }
     </style>
-    <template is="dom-if" if="[[!isCustom]]">
-      <div class="value-field">
+    <template is="dom-if" if="[[!isCustom]]" restamp>
+      <div class="value-field api-field">
         <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
         <template is="dom-if" if="[[model.hasDescription]]">
           <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
         </template>
+        <slot name="suffix"></slot>
       </div>
     </template>
-    <template is="dom-if" if="[[isCustom]]">
-      <div class="form-row">
-        <div class="name-field">
-          <paper-input
-            value="{{name}}"
-            label="Header name"
-            class="param-name"
-            on-focus="_headerNameFocus"
-            type="text"
-            pattern="\S*"
-            error="Header name is not valid"
-            required></paper-input>
-          <paper-autocomplete
-            dynamic-align
-            vertical-align="bottom"
-            horizontal-align="left"
-            vertical-offset="56"
-            open-on-focus on-query="_queryHeaderName"
-            on-selected="_onHeaderNameSelected"
-            opened="{{suggestionsOpened}}"></paper-autocomplete>
+    <template is="dom-if" if="[[isCustom]]" restamp>
+      <div class="custom-wrapper">
+        <div class="form-row custom-field">
+          <div class="name-field">
+            <paper-input
+              value="{{name}}"
+              label="Header name"
+              class="param-name"
+              on-focus="_headerNameFocus"
+              type="text"
+              pattern="\S*"
+              error="Header name is not valid"
+              required></paper-input>
+            <paper-autocomplete
+              dynamic-align
+              vertical-align="bottom"
+              horizontal-align="left"
+              vertical-offset="56"
+              open-on-focus
+              on-query="_queryHeaderName"
+              on-selected="_onHeaderNameSelected"
+              opened="{{suggestionsOpened}}"></paper-autocomplete>
+          </div>
+          <div class="value-field">
+            <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
+          </div>
         </div>
-        <div class="value-field">
-          <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
+        <div class="actions">
           <template is="dom-if" if="[[model.hasDescription]]">
             <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
           </template>
+          <slot name="suffix"></slot>
         </div>
       </div>
     </template>
@@ -152,15 +169,13 @@
    * @appliesMixin Polymer.IronValidatableBehavior
    */
   class ApiHeadersFormItem extends Polymer.mixinBehaviors(Polymer.IronValidatableBehavior, Polymer.Element) {
-    static get is() {
-      return 'api-headers-form-item';
-    }
+    static get is() { return 'api-headers-form-item'; }
     static get properties() {
       return {
         /**
          * View model for the headers.
          */
-        model: Array,
+        model: Object,
         /**
          * The name of this element.
          */
@@ -216,7 +231,14 @@
         /**
          * True when suggestions popover is opened
          */
-        suggestionsOpened: Boolean
+        suggestionsOpened: Boolean,
+        /**
+         * Prohibits rendering of the documentation (the icon and the
+         * description).
+         * Note, Set is separately for `api-view-model-transformer`
+         * component as this only affects "custom" items.
+         */
+        noDocs: Boolean
       };
     }
 
@@ -298,13 +320,17 @@
       const model = this.model;
       if (!name || !model || !model.schema || model.schema.isEnum) {
         this._updateValueAutocomplete();
-        this._updateHeaderDocs();
+        if (!this.noDocs) {
+          this._updateHeaderDocs();
+        }
         return;
       }
       Polymer.RenderStatus.afterNextRender(this, () => {
         const info = this._queryHeaderNameSuggestions(name);
         this._updateValueAutocomplete(info);
-        this._updateHeaderDocs(info);
+        if (!this.noDocs) {
+          this._updateHeaderDocs(info);
+        }
       });
     }
     /**
@@ -314,6 +340,9 @@
     _customChangeFocus() {
       if (this._valueInput) {
         const ac = this.shadowRoot.querySelector('.value-autocomplete');
+        if (!ac) {
+          return;
+        }
         ac.opened = true;
         ac._previousQuery = '';
         ac._valueChanged();
@@ -326,6 +355,9 @@
       this._valueInput = this.shadowRoot.querySelector('api-property-form-item');
       Polymer.RenderStatus.afterNextRender(this, () => {
         const ac = this.shadowRoot.querySelector('.value-autocomplete');
+        if (!ac) {
+          return;
+        }
         ac.opened = true;
         ac._previousQuery = '';
         ac._valueChanged();
@@ -364,7 +396,7 @@
      * already.
      */
     _updateHeaderDocs(info) {
-      if (this.suggestionsOpened) {
+      if (this.suggestionsOpened || this.noDocs) {
         return;
       }
       const model = this.model;
