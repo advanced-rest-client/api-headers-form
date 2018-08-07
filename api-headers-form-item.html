@@ -92,7 +92,7 @@
     </style>
     <template is="dom-if" if="[[!isCustom]]" restamp>
       <div class="value-field api-field">
-        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete"></api-property-form-item>
+        <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete" readonly="[[readonly]]"></api-property-form-item>
         <template is="dom-if" if="[[model.hasDescription]]">
           <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
         </template>
@@ -111,6 +111,7 @@
               type="text"
               pattern="\S*"
               error="Header name is not valid"
+              readonly="[[readonly]]"
               required></paper-input>
             <paper-autocomplete
               dynamic-align
@@ -123,7 +124,7 @@
               opened="{{suggestionsOpened}}"></paper-autocomplete>
           </div>
           <div class="value-field">
-            <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus"></api-property-form-item>
+            <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus" readonly="[[readonly]]"></api-property-form-item>
           </div>
         </div>
         <div class="actions">
@@ -168,8 +169,9 @@
    * @demo demo/index.html
    * @appliesMixin Polymer.IronValidatableBehavior
    */
-  class ApiHeadersFormItem extends Polymer.mixinBehaviors(Polymer.IronValidatableBehavior, Polymer.Element) {
-    static get is() { return 'api-headers-form-item'; }
+  class ApiHeadersFormItem extends
+    Polymer.mixinBehaviors(Polymer.IronValidatableBehavior, Polymer.Element) {
+    static get is() {return 'api-headers-form-item';}
     static get properties() {
       return {
         /**
@@ -238,7 +240,11 @@
          * Note, Set is separately for `api-view-model-transformer`
          * component as this only affects "custom" items.
          */
-        noDocs: Boolean
+        noDocs: Boolean,
+        /**
+         * When set the editor is in read only mode.
+         */
+        readonly: Boolean
       };
     }
 
@@ -248,6 +254,9 @@
     }
     // Handler for header name field focus
     _headerNameFocus(e) {
+      if (this.readonly) {
+        return;
+      }
       const autocomplete = this.shadowRoot.querySelector('paper-autocomplete');
       if (autocomplete.target) {
         return;
@@ -338,6 +347,9 @@
      * Sets the `_valueInput` proeprty for value autosugession
      */
     _customChangeFocus() {
+      if (this.readonly) {
+        return;
+      }
       if (this._valueInput) {
         const ac = this.shadowRoot.querySelector('.value-autocomplete');
         if (!ac) {
