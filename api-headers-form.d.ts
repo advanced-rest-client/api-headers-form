@@ -111,13 +111,18 @@ declare class ApiHeadersForm extends
    * component as this only affects "custom" items.
    */
   noDocs: boolean|null|undefined;
+
+  /**
+   * When set the editor is in read only mode.
+   */
+  readonly: boolean|null|undefined;
   _getValidity(): any;
 
   /**
    * Appends an empty header to the list.
    */
   add(): void;
-  _modelChanged(record: any): void;
+  _modelChanged(record: any, readonly: any): void;
 
   /**
    * Updates value of the element when model change.

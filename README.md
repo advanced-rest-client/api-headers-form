@@ -1,21 +1,25 @@
-# \<api-headers-form\>
+[![Build Status](https://travis-ci.org/advanced-rest-client/api-headers-form.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/api-headers-form)
 
-HTTP headers form build from AMF json/ld model
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/advanced-rest-client/api-headers-form)
 
-## Install the Polymer-CLI
+## &lt;api-headers-form&gt;
 
-First, make sure you have the [Polymer CLI](https://www.npmjs.com/package/polymer-cli) installed. Then run `polymer serve` to serve your element locally.
+HTTP headers form build from AMF json/ld model.
 
-## Viewing Your Element
-
+<!---
 ```
-$ polymer serve
+<custom-element-demo>
+  <template>
+    <link rel="import" href="api-headers-form.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+<api-headers-form></api-headers-form>
 ```
 
-## Running Tests
+### API components
 
-```
-$ polymer test
-```
-
-Your application is already set up to be tested via [web-component-tester](https://github.com/Polymer/web-component-tester). Run `polymer test` to run your application's test suite locally.
+This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)
