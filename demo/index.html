@@ -11,10 +11,29 @@
     <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
     <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
     <link rel="import" href="../../api-view-model-transformer/api-view-model-transformer.html">
-    <link rel="import" href="../../paper-checkbox/paper-checkbox.html">
+    <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
+    <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
+    <link rel="import" href="../../neon-animation/web-animations.html">
     <link rel="import" href="../api-headers-form.html">
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
+      body,
+      html {
+        background-color: #e5e5e5;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+
+      .card {
+        @apply --shadow-elevation-4dp;
+        padding: 20px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        box-sizing: border-box;
+        background-color: #fff;
+      }
+
       output {
         background-color: #FFF3E0;
         white-space: pre-wrap;
@@ -34,7 +53,7 @@
         background-color: #ececec;
       }
 
-      .config paper-checkbox {
+      .config paper-toggle-button {
         margin-bottom: 12px;
       }
       </style>
@@ -42,20 +61,21 @@
   </head>
   <body>
     <dom-bind id="demo">
-      <template is="dom-bind">
+      <template>
         <h1 class="vertical-section-container centered">API headers form</h1>
-        <section class="vertical-section-container centered config">
+        <section class="vertical-section-container centered config card" rel="main">
           <h2>Configuration options</h2>
-          <paper-checkbox checked="{{narrow}}">Render narrow view</paper-checkbox>
-          <paper-checkbox checked="{{allowHideOptional}}">Allow auto hide optional headers</paper-checkbox>
-          <paper-checkbox checked="{{allowDisableParams}}">Allow disabling parameters</paper-checkbox>
-          <paper-checkbox checked="{{allowCustom}}">Allow custom parameters</paper-checkbox>
-          <paper-checkbox checked="{{noDocs}}" on-checked-changed="_updateModel">Disable documentation rendering</paper-checkbox>
+          <paper-toggle-button checked="{{narrow}}">Render narrow view</paper-toggle-button>
+          <paper-toggle-button checked="{{allowHideOptional}}">Allow auto hide optional headers</paper-toggle-button>
+          <paper-toggle-button checked="{{allowDisableParams}}">Allow disabling parameters</paper-toggle-button>
+          <paper-toggle-button checked="{{allowCustom}}">Allow custom parameters</paper-toggle-button>
+          <paper-toggle-button checked="{{noDocs}}" on-checked-changed="_updateModel">Disable documentation rendering</paper-toggle-button>
+          <paper-toggle-button checked="{{readonly}}">Read only mode</paper-toggle-button>
         </section>
-        <div class="vertical-section-container centered">
+        <div class="vertical-section-container centered card">
           <h2>The editor</h2>
           <api-view-model-transformer amf-model="[[amfModel]]" shape="[[amfHeaders]]" view-model="{{viewModel}}" no-docs="[[noDocs]]"></api-view-model-transformer>
-          <api-headers-form value="{{headers}}" model="[[viewModel]]" narrow="[[narrow]]" allow-disable-params="[[allowDisableParams]]" allow-custom="[[allowCustom]]" allow-hide-optional="[[allowHideOptional]]" no-docs="[[noDocs]]"></api-headers-form>
+          <api-headers-form value="{{headers}}" model="[[viewModel]]" narrow="[[narrow]]" allow-disable-params="[[allowDisableParams]]" allow-custom="[[allowCustom]]" allow-hide-optional="[[allowHideOptional]]" no-docs="[[noDocs]]" readonly="[[readonly]]"></api-headers-form>
           <output>[[headers]]</output>
         </section>
       </template>
