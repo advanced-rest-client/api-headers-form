@@ -63,10 +63,10 @@
           <template>
             <div class="form-item" data-optional$="[[computeIsOptional(hasOptional, item)]]">
               <template is="dom-if" if="[[allowDisableParams]]">
-                <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable or disable this header"></paper-checkbox>
+                <paper-checkbox class="enable-checkbox" checked="{{item.schema.enabled}}" title="Enable or disable this header" disabled="[[readonly]]"></paper-checkbox>
               </template>
-              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]" no-docs="[[noDocs]]">
-                <paper-icon-button title="Removes header from the form" class="action-icon delete-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom" slot="suffix"></paper-icon-button>
+              <api-headers-form-item name="{{item.name}}" value="{{item.value}}" model="[[item]]" required$="[[item.required]]" readonly="[[readonly]]" is-custom="[[item.schema.isCustom]]" is-array="[[item.schema.isArray]]" narrow="[[narrow]]" no-docs="[[noDocs]]">
+                <paper-icon-button title="Removes header from the form" class="action-icon delete-icon" icon="arc:remove-circle-outline" on-tap="_removeCustom" slot="suffix" disabled="[[readonly]]"></paper-icon-button>
               </api-headers-form-item>
             </div>
           </template>
@@ -75,7 +75,7 @@
     </iron-form>
     <template is="dom-if" if="[[allowCustom]]">
       <div class="add-action">
-        <paper-button class="action-button" on-tap="add" title="Adds new header to the form">
+        <paper-button class="action-button" on-tap="add" title="Adds new header to the form" disabled="[[readonly]]">
           <iron-icon class="action-icon" icon="arc:add-circle-outline" alt="Add header icon"></iron-icon>
           Add header
         </paper-button>
@@ -165,8 +165,7 @@
   class ApiHeadersForm extends Polymer.mixinBehaviors([
       Polymer.IronValidatableBehavior
     ], ArcBehaviors.ApiFormMixin(Polymer.Element)) {
-
-    static get is() { return 'api-headers-form'; }
+    static get is() {return 'api-headers-form';}
     static get properties() {
       return {
         /**
@@ -183,13 +182,17 @@
          * Note, Set is separately for `api-view-model-transformer`
          * component as this only affects "custom" items.
          */
-        noDocs: Boolean
+        noDocs: Boolean,
+        /**
+         * When set the editor is in read only mode.
+         */
+        readonly: Boolean
       };
     }
 
     static get observers() {
       return [
-        '_modelChanged(model.*)'
+        '_modelChanged(model.*, readonly)'
       ];
     }
     // Appends an empty header to the list.
@@ -200,13 +203,15 @@
       this.addCustom('header');
     }
 
-    _modelChanged(record) {
+    _modelChanged(record, readonly) {
       if (['model', 'model.splices'].indexOf(record.path) !== -1) {
-        this._updateValue();
+        if (!readonly) {
+          this._updateValue();
+        }
         if (record.path === 'model' && record.value) {
           this._autoDescribeModel(record.value);
         }
-      } else if (record.path.match(/model.\d+.(name|value|schema\.enabled)/)) {
+      } else if (!readonly && record.path.match(/model.\d+.(name|value|schema\.enabled)/)) {
         this._updateValue();
       }
     }
@@ -214,7 +219,7 @@
      * Updates value of the element when model change.
      */
     _updateValue() {
-      if (this.__updatingModelValue) {
+      if (this.__updatingModelValue || this.readonly) {
         return;
       }
       this.__updatingModelValue = true;
