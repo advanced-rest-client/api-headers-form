@@ -186,7 +186,8 @@
         /**
          * When set the editor is in read only mode.
          */
-        readonly: Boolean
+        readonly: Boolean,
+        autoValidate: Boolean
       };
     }
 
@@ -204,56 +205,64 @@
     }
 
     _modelChanged(record, readonly) {
+      if (readonly) {
+        return;
+      }
       if (['model', 'model.splices'].indexOf(record.path) !== -1) {
-        if (!readonly) {
-          this._updateValue();
-        }
+        this._updateValue();
         if (record.path === 'model' && record.value) {
           this._autoDescribeModel(record.value);
         }
-      } else if (!readonly && record.path.match(/model.\d+.(name|value|schema\.enabled)/)) {
-        this._updateValue();
+      } else if (record.path.match(/model.\d+.(name|value|schema\.enabled)/)) {
+        this._updateValue(this.autoValidate);
       }
     }
     /**
      * Updates value of the element when model change.
      */
-    _updateValue() {
+    _updateValue(validate) {
       if (this.__updatingModelValue || this.readonly) {
         return;
       }
       this.__updatingModelValue = true;
       setTimeout(() => {
         // Prohibits computation when model is set.
-        this.__updateValue();
+        this.__updateValue(validate);
         this.__updatingModelValue = false;
       }, 25);
     }
     /**
      * Creates a header value for current model.
      */
-    __updateValue() {
+    __updateValue(validate) {
       const h = this.model;
       if (!h || !h.length) {
         this.value = '';
         return;
       }
-      const value = h.map((item) => {
+      let value = '';
+      for (let i = 0, len = h.length; i < len; i++) {
+        const item = h[i];
         if (item.schema && item.schema.enabled === false) {
-          return;
+          continue;
         }
         let n = item.name || '';
         let v = item.value || '';
         if (!n && !v) {
-          return;
+          continue;
         }
         if (v instanceof Array) {
           v = v.join(',');
         }
-        return n + ': ' + v;
-      }).filter((item) => !!item).join('\n');
+        if (value[0]) {
+          value += '\n';
+        }
+        value += n + ': ' + v;
+      }
       this.set('value', value);
-      this.validate();
+      if (validate) {
+        this.validate();
+      }
     }
     /**
      * Adds documentation for headers that doesn't have it already.
