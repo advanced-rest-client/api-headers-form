@@ -83,9 +83,13 @@
           assert.ok(node);
         });
 
-        test('Renders docs section', () => {
-          const node = element.shadowRoot.querySelector('.docs');
-          assert.ok(node);
+        test('Renders docs section', (done) => {
+          element.toggleDocs();
+          flush(() => {
+            const node = element.shadowRoot.querySelector('.docs');
+            assert.ok(node);
+            done();
+          });
         });
 
         test('Sets _valueInput on input focus', function() {
@@ -149,18 +153,7 @@
           const node = element.shadowRoot.querySelector('.custom-wrapper api-property-form-item');
           assert.ok(node);
         });
-
-        test('Sets target on autocomplete when name focus', () => {
-          const node = element.shadowRoot.querySelector('.param-name');
-          Polymer.Base.fire('focus', {}, {
-            bubbles: false,
-            node
-          });
-          const ac = element.shadowRoot.querySelector('paper-autocomplete');
-          assert.isTrue(ac.target === node);
-        });
       });
-
       a11ySuite('Basic');
     });
     </script>

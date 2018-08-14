@@ -94,7 +94,7 @@
       <div class="value-field api-field">
         <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="typed" required$="[[required]]" on-focus="_customChangeFocus" on-blur="_closeAutocomplete" readonly="[[readonly]]"></api-property-form-item>
         <template is="dom-if" if="[[model.hasDescription]]">
-          <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
+          <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-click="toggleDocs"></paper-icon-button>
         </template>
         <slot name="suffix"></slot>
       </div>
@@ -112,16 +112,20 @@
               pattern="\S*"
               error="Header name is not valid"
               readonly="[[readonly]]"
+              on-input="_queryHeaderName"
               required></paper-input>
-            <paper-autocomplete
-              dynamic-align
-              vertical-align="bottom"
-              horizontal-align="left"
-              vertical-offset="56"
-              open-on-focus
-              on-query="_queryHeaderName"
-              on-selected="_onHeaderNameSelected"
-              opened="{{suggestionsOpened}}"></paper-autocomplete>
+            <template is="dom-if" if="[[_renderAutocomplete(_nameInput, _nameSuggestions)]]">
+              <paper-autocomplete
+                class="name-suggestions"
+                dynamic-align
+                vertical-align="bottom"
+                horizontal-align="left"
+                vertical-offset="56"
+                target="[[_nameInput]]"
+                source="[[_nameSuggestions]]"
+                on-selected="_onHeaderNameSelected"
+                opened="{{_nameSuggestionsOpened}}"></paper-autocomplete>
+            </template>
           </div>
           <div class="value-field">
             <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}" data-type="custom" on-focus="_customChangeFocus" readonly="[[readonly]]"></api-property-form-item>
@@ -129,32 +133,32 @@
         </div>
         <div class="actions">
           <template is="dom-if" if="[[model.hasDescription]]">
-            <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-tap="toggleDocumentation"></paper-icon-button>
+            <paper-icon-button class="hint-icon" title="Display documentation" icon="arc:help" on-click="toggleDocs"></paper-icon-button>
           </template>
           <slot name="suffix"></slot>
         </div>
       </div>
     </template>
-    <template is="dom-if" if="[[model.hasDescription]]" restamp>
+    <template is="dom-if" restamp id="docsIf" on-dom-change="_docsRendered">
       <div class="docs">
-        <iron-collapse opened="[[docsOpened]]">
+        <iron-collapse opened="[[docsOpened]]" on-transitionend="_docsAnimated">
           <marked-element markdown="[[model.description]]">
             <div slot="markdown-html" class="markdown-body"></div>
           </marked-element>
         </iron-collapse>
       </div>
     </template>
-    <template is="dom-if" if="[[_valueInput]]">
+    <template is="dom-if" if="[[_renderAutocomplete(_valueInput, _valueSuggestions)]]">
       <paper-autocomplete
         class="value-autocomplete"
         on-selected="_onHeaderValueSelected"
-        target="[[_valueInput]]"
         position-target="[[_valueInput]]"
         dynamic-align
         vertical-align="bottom"
         horizontal-align="left"
         vertical-offset="56"
-        source="[[valueSuggestions]]"></paper-autocomplete>
+        target="[[_valueInput]]"
+        source="[[_valueSuggestions]]"></paper-autocomplete>
     </template>
   </template>
   <script>
@@ -225,15 +229,18 @@
          * List of value suggestion for current header. The list is updated
          * automatically when header name changes
          */
-        valueSuggestions: Array,
+        _valueSuggestions: Array,
+        _nameSuggestions: Array,
         // Reference to header value input.
         _valueInput: Object,
+        // Reference to the name input field
+        _nameInput: Object,
         // True when this model is required
         required: Boolean,
         /**
          * True when suggestions popover is opened
          */
-        suggestionsOpened: Boolean,
+        _nameSuggestionsOpened: Boolean,
         /**
          * Prohibits rendering of the documentation (the icon and the
          * description).
@@ -249,19 +256,34 @@
     }
 
     // Toggles documentation (if available)
-    toggleDocumentation() {
-      this.docsOpened = !this.docsOpened;
+    toggleDocs() {
+      if (!this.docsOpened) {
+        this.$.docsIf.if = true;
+      } else {
+        this.docsOpened = false;
+      }
+    }
+
+    _docsRendered(e) {
+      if (!e.target.if) {
+        return;
+      }
+      if (!this.docsOpened) {
+        this.docsOpened = true;
+      }
+    }
+
+    _docsAnimated() {
+      if (this.docsOpened === false) {
+        this.$.docsIf.if = false;
+      }
     }
     // Handler for header name field focus
     _headerNameFocus(e) {
-      if (this.readonly) {
+      if (this.readonly || this._nameInput) {
         return;
       }
-      const autocomplete = this.shadowRoot.querySelector('paper-autocomplete');
-      if (autocomplete.target) {
-        return;
-      }
-      autocomplete.target = e.target;
+      this._nameInput = e.currentTarget || e.target;
     }
     /**
      * A handler called when the user selects a suggestion.
@@ -277,17 +299,24 @@
      */
     _queryHeaderName(e) {
       const suggestions = this._queryHeaderNameSuggestions(e.detail.value);
-      const autocomplete = this.shadowRoot.querySelector('paper-autocomplete');
       if (!suggestions || !suggestions.length) {
-        autocomplete.source = [];
+        this._nameSuggestions = undefined;
+        this._nameSuggestionsOpened = false;
         return;
       }
-      autocomplete.source = suggestions.map((item) => {
+      this._nameSuggestions = suggestions.map((item) => {
         return {
           value: item.key,
           display: item.key
         };
       });
+      const ac = this.shadowRoot.querySelector('.name-suggestions');
+      if (!ac) {
+        return;
+      }
+      ac.opened = true;
+      ac._previousQuery = '';
+      ac._valueChanged();
     }
     /**
      * Dispatches `query-headers` custom event to retreive from the application
@@ -385,22 +414,22 @@
      */
     _updateValueAutocomplete(headers) {
       if (!headers || !headers.length) {
-        if (this.valueSuggestions) {
-          this.valueSuggestions = undefined;
+        if (this._valueSuggestions) {
+          this._valueSuggestions = undefined;
         }
         return;
       }
-      var header;
-      for (var i = 0, len = headers.length; i < len; i++) {
+      let header;
+      for (let i = 0, len = headers.length; i < len; i++) {
         if (headers[i].key.toLowerCase() === this.name.toLowerCase()) {
           header = headers[i];
           break;
         }
       }
       if (header) {
-        this.valueSuggestions = header.autocomplete;
+        this._valueSuggestions = header.autocomplete;
       } else {
-        this.valueSuggestions = undefined;
+        this._valueSuggestions = undefined;
       }
     }
     /**
@@ -408,7 +437,7 @@
      * already.
      */
     _updateHeaderDocs(info) {
-      if (this.suggestionsOpened || this.noDocs) {
+      if (this._nameSuggestionsOpened || this.noDocs) {
         return;
       }
       const model = this.model;
@@ -450,8 +479,16 @@
       this.__closingAutocomplete = true;
       setTimeout(() => {
         this.__closingAutocomplete = false;
-        this.shadowRoot.querySelector('.value-autocomplete').opened = false;
+        const ac = this.shadowRoot.querySelector('.value-autocomplete');
+        if (!ac) {
+          return;
+        }
+        ac.opened = false;
       }, 250);
+    }
+
+    _renderAutocomplete(input, suggestions) {
+      return !!(input && suggestions && suggestions.length);
     }
   }
 
