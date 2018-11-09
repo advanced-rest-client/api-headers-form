@@ -39,7 +39,8 @@
     "arc-polyfills": "advanced-rest-client/arc-polyfills#^0.1.11",
     "arc-electron-default-theme": "advanced-rest-client/arc-electron-default-theme#2.0.0-preview",
     "paper-toggle-button": "PolymerElements/paper-toggle-button#^2.0.0",
-    "web-animations-js": "web-animations/web-animations-js#^2.3"
+    "web-animations-js": "web-animations/web-animations-js#^2.3",
+    "api-navigation": "advanced-rest-client/api-navigation#^2.0.0"
   },
   "repository": {
     "type": "git",
