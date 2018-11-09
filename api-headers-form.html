@@ -211,6 +211,9 @@
       if (readonly) {
         return;
       }
+      if (record.path === 'model' && this.invalid) {
+        this.invalid = false;
+      }
       if (['model', 'model.splices'].indexOf(record.path) !== -1) {
         this._updateValue();
         if (record.path === 'model' && record.value) {
@@ -242,6 +245,9 @@
       const h = this.model;
       if (!h || !h.length) {
         this.value = '';
+        if (this.invalid) {
+          this.invalid = false;
+        }
         return;
       }
       let value = '';
