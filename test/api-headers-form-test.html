@@ -24,7 +24,8 @@
     </test-fixture>
 
     <script>
-      suite('api-headers-form', () => {
+    suite('api-headers-form', () => {
+      suite('Basics', () => {
         const model = {
           binding: 'header',
           name: 'content-type',
@@ -105,9 +106,66 @@
           });
           element.set(['model', 0, 'schema', 'enabled'], false);
         });
-
-        a11ySuite('BasicTestFixture');
       });
+
+      suite('Optional values', () => {
+        const model = [{
+          binding: 'header',
+          name: 'header-without-value',
+          hasDescription: true,
+          description: 'test',
+          required: false,
+          schema: {
+            enabled: true,
+            type: 'string',
+            inputLabel: 'x-string',
+            isEnum: false,
+            isArray: false,
+            isBool: false,
+            inputType: 'text'
+          },
+          value: ''
+        }, {
+          binding: 'header',
+          name: 'header-with-value',
+          hasDescription: true,
+          description: 'test',
+          required: false,
+          schema: {
+            enabled: true,
+            type: 'string',
+            inputLabel: 'x-string',
+            isEnum: false,
+            isArray: false,
+            isBool: false,
+            inputType: 'text'
+          },
+          value: 'test'
+        }];
+
+        test('Not required header is included when not empty', (done) => {
+          const element = fixture('BasicTestFixture');
+          element.model = model;
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            const value = element.value;
+            assert.isAbove(value.indexOf('header-with-value: test'), -1);
+            done();
+          });
+        });
+
+        test('Not required header is not included when empty', (done) => {
+          const element = fixture('BasicTestFixture');
+          element.model = model;
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            const value = element.value;
+            assert.equal(value.indexOf('header-without-value'), -1);
+            done();
+          });
+        });
+      });
+
+      a11ySuite('BasicTestFixture');
+    });
     </script>
 
   </body>
