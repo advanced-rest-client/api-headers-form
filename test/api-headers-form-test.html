@@ -24,7 +24,8 @@
     </test-fixture>
 
     <script>
-      suite('api-headers-form', () => {
+    suite('api-headers-form', () => {
+      suite('Basics', () => {
         const model = {
           binding: 'header',
           name: 'content-type',
@@ -105,9 +106,153 @@
           });
           element.set(['model', 0, 'schema', 'enabled'], false);
         });
-
-        a11ySuite('BasicTestFixture');
       });
+
+      suite('Optional values', () => {
+        const model = [{
+          binding: 'header',
+          name: 'header-without-value',
+          hasDescription: true,
+          description: 'test',
+          required: false,
+          schema: {
+            enabled: true,
+            type: 'string',
+            inputLabel: 'x-string',
+            isEnum: false,
+            isArray: false,
+            isBool: false,
+            inputType: 'text'
+          },
+          value: ''
+        }, {
+          binding: 'header',
+          name: 'header-with-value',
+          hasDescription: true,
+          description: 'test',
+          required: false,
+          schema: {
+            enabled: true,
+            type: 'string',
+            inputLabel: 'x-string',
+            isEnum: false,
+            isArray: false,
+            isBool: false,
+            inputType: 'text'
+          },
+          value: 'test'
+        }];
+
+        test('Not required header is included when not empty', (done) => {
+          const element = fixture('BasicTestFixture');
+          element.model = model;
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            const value = element.value;
+            assert.isAbove(value.indexOf('header-with-value: test'), -1);
+            done();
+          });
+        });
+
+        test('Not required header is not included when empty', (done) => {
+          const element = fixture('BasicTestFixture');
+          element.model = model;
+          Polymer.RenderStatus.afterNextRender(this, () => {
+            const value = element.value;
+            assert.equal(value.indexOf('header-without-value'), -1);
+            done();
+          });
+        });
+      });
+
+      suite('__updateValue()', () => {
+        let element;
+        setup(() => {
+          element = fixture('BasicTestFixture');
+        });
+
+        test('Sets empty value when model is not computed', () => {
+          element.__updateValue();
+          assert.equal(element.value, '');
+        });
+
+        test('Clear validation state if invalid and no model', () => {
+          element.invalid = true;
+          element.__updateValue();
+          assert.isFalse(element.invalid);
+        });
+
+        test('Ignores headers that are not enabled', () => {
+          element.model = [{
+            name: 'not-enabled',
+            value: '',
+            schema: {
+              enabled: false
+            }
+          }];
+          element.__updateValue();
+          assert.equal(element.value, '');
+        });
+
+        test('Ignores headers without name and value', () => {
+          element.model = [{
+            name: '',
+            value: '',
+            schema: {}
+          }];
+          element.__updateValue();
+          assert.equal(element.value, '');
+        });
+
+        test('Ignores headers without value and not required', () => {
+          element.model = [{
+            name: 'optional',
+            value: '',
+            required: false,
+            schema: {}
+          }];
+          element.__updateValue();
+          assert.equal(element.value, '');
+        });
+
+        test('Adds headers without value and required', () => {
+          element.model = [{
+            name: 'x1',
+            value: '',
+            required: true,
+            schema: {}
+          }];
+          element.__updateValue();
+          assert.equal(element.value, 'x1: ');
+        });
+
+        test('Handles array values', () => {
+          element.model = [{
+            name: 'x1',
+            value: ['a', 'b'],
+            required: true,
+            schema: {}
+          }];
+          element.__updateValue();
+          assert.equal(element.value, 'x1: a,b');
+        });
+
+        test('Adds line break', () => {
+          element.model = [{
+            name: 'x1',
+            value: 'a',
+            schema: {}
+          }, {
+            name: 'x2',
+            value: 'b',
+            schema: {}
+          }];
+          element.__updateValue();
+          assert.equal(element.value, 'x1: a\nx2: b');
+        });
+      });
+
+      a11ySuite('BasicTestFixture');
+    });
     </script>
 
   </body>

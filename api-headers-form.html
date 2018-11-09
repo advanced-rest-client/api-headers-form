@@ -1,6 +1,7 @@
 <link rel="import" href="../polymer/polymer-element.html">
 <link rel="import" href="../polymer/lib/elements/dom-if.html">
 <link rel="import" href="../polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../polymer/lib/utils/render-status.html">
 <link rel="import" href="../iron-form/iron-form.html">
 <link rel="import" href="../paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../arc-icons/arc-icons.html">
@@ -165,7 +166,9 @@
   class ApiHeadersForm extends Polymer.mixinBehaviors([
       Polymer.IronValidatableBehavior
     ], ArcBehaviors.ApiFormMixin(Polymer.Element)) {
-    static get is() {return 'api-headers-form';}
+    static get is() {
+      return 'api-headers-form';
+    }
     static get properties() {
       return {
         /**
@@ -208,6 +211,9 @@
       if (readonly) {
         return;
       }
+      if (record.path === 'model' && this.invalid) {
+        this.invalid = false;
+      }
       if (['model', 'model.splices'].indexOf(record.path) !== -1) {
         this._updateValue();
         if (record.path === 'model' && record.value) {
@@ -219,25 +225,31 @@
     }
     /**
      * Updates value of the element when model change.
+     * @param {Boolean} validate When true then it performs validation after setting
+     * the value.
      */
     _updateValue(validate) {
       if (this.__updatingModelValue || this.readonly) {
         return;
       }
       this.__updatingModelValue = true;
-      setTimeout(() => {
-        // Prohibits computation when model is set.
+      Polymer.RenderStatus.afterNextRender(this, () => {
         this.__updateValue(validate);
         this.__updatingModelValue = false;
-      }, 25);
+      });
     }
     /**
      * Creates a header value for current model.
+     * @param {Boolean} validate When true then it performs validation after setting
+     * the value.
      */
     __updateValue(validate) {
       const h = this.model;
       if (!h || !h.length) {
         this.value = '';
+        if (this.invalid) {
+          this.invalid = false;
+        }
         return;
       }
       let value = '';
@@ -253,6 +265,9 @@
         }
         if (v instanceof Array) {
           v = v.join(',');
+        }
+        if (!v && !item.required) {
+          continue;
         }
         if (value[0]) {
           value += '\n';
