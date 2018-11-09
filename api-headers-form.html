@@ -225,6 +225,8 @@
     }
     /**
      * Updates value of the element when model change.
+     * @param {Boolean} validate When true then it performs validation after setting
+     * the value.
      */
     _updateValue(validate) {
       if (this.__updatingModelValue || this.readonly) {
