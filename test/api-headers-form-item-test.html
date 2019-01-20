@@ -154,6 +154,117 @@
           assert.ok(node);
         });
       });
+
+      suite('_updateHeaderDocs()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Custom');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Does nothing when noDocs', () => {
+          element.noDocs = true;
+          element._updateHeaderDocs([]);
+
+          assert.isTrue(element.model.hasDescription);
+        });
+
+        test('Does nothing when _nameSuggestionsOpened', () => {
+          element._nameSuggestionsOpened = true;
+          element._updateHeaderDocs([]);
+
+          assert.isTrue(element.model.hasDescription);
+        });
+
+        test('Clears the description when __ownDescription flag', () => {
+          element.model.__ownDescription = true;
+          element._updateHeaderDocs([]);
+
+          assert.isFalse(element.model.hasDescription);
+          assert.isUndefined(element.model.description);
+        });
+
+        test('Won\'t clear the description when no __ownDescription flag', () => {
+          element._updateHeaderDocs([]);
+
+          assert.isTrue(element.model.hasDescription);
+          assert.equal(element.model.description, 'test');
+        });
+
+        test('Updates description from suggestions', () => {
+          element.model.hasDescription = false;
+          element._updateHeaderDocs([{
+            desc: 'updated-desc'
+          }]);
+
+          assert.isTrue(element.model.hasDescription);
+          assert.equal(element.model.description, 'updated-desc');
+        });
+
+        test('Sets __ownDescription flag', () => {
+          element.model.hasDescription = false;
+          element._updateHeaderDocs([{
+            desc: 'updated-desc'
+          }]);
+
+          assert.isTrue(element.model.__ownDescription);
+        });
+      });
+
+      suite('_onHeaderValueSelected()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Custom');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Sets new value', () => {
+          element._onHeaderValueSelected({
+            detail: {
+              value: 'new-value'
+            }
+          });
+          assert.equal(element.value, 'new-value');
+        });
+      });
+
+      suite('_closeAutocomplete()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Custom');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Does nothing when no _valueInput', () => {
+          element._valueInput = undefined;
+          element._closeAutocomplete();
+          assert.isUndefined(element.__closingAutocomplete);
+        });
+
+        test('Does nothing when __closingAutocomplete is set', () => {
+          element._valueInput = 'test';
+          element.__closingAutocomplete = 1;
+          element._closeAutocomplete();
+          assert.equal(element.__closingAutocomplete, 1);
+        });
+
+        test('Sets __closingAutocomplete', () => {
+          element._valueInput = 'test';
+          element._closeAutocomplete();
+          assert.isTrue(element.__closingAutocomplete);
+        });
+
+        test('Re-sets __closingAutocomplete', () => {
+          element._valueInput = 'test';
+          element._closeAutocomplete();
+          setTimeout(() => {
+            assert.isFalse(element.__closingAutocomplete);
+          }, 251);
+        });
+      });
       a11ySuite('Basic');
     });
     </script>
