@@ -4,21 +4,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
     <title>api-headers-form demo</title>
-    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
-    <link rel="import" href="../../shadycss/apply-shim.html">
-    <link rel="import" href="../../polymer/lib/elements/custom-style.html">
-    <link rel="import" href="../../polymer/lib/elements/dom-bind.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html">
-    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html">
-    <link rel="import" href="../../api-view-model-transformer/api-view-model-transformer.html">
-    <link rel="import" href="../../paper-toggle-button/paper-toggle-button.html">
-    <link rel="import" href="../../arc-electron-default-theme/arc-electron-default-theme.html">
-    <link rel="import" href="../../paper-dropdown-menu/paper-dropdown-menu.html">
-    <link rel="import" href="../../paper-item/paper-item.html">
-    <link rel="import" href="../../paper-listbox/paper-listbox.html">
-    <link rel="import" href="../../neon-animation/web-animations.html">
-    <link rel="import" href="../../api-navigation/api-navigation.html">
-    <link rel="import" href="../api-headers-form.html">
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/web-animations-js/web-animations-next.min.js"></script>
+
+    <script type="module">
+      import '@polymer/polymer/lib/elements/dom-bind.js';
+      import '@polymer/iron-demo-helpers/demo-pages-shared-styles.js';
+      import '@api-components/api-navigation/api-navigation.js';
+      import '@polymer/paper-dropdown-menu/paper-dropdown-menu.js';
+      import '@polymer/paper-item/paper-item.js';
+      import '@polymer/paper-listbox/paper-listbox.js';
+      import '@polymer/paper-toggle-button/paper-toggle-button.js';
+      import '@advanced-rest-client/arc-electron-default-theme/arc-electron-default-theme.js';
+      import '@api-components/api-view-model-transformer/api-view-model-transformer.js';
+      import '../api-headers-form.js';
+    </script>
+
     <custom-style>
       <style is="custom-style" include="demo-pages-shared-styles">
       body,
@@ -118,18 +120,10 @@
         </header>
 
         <section role="main" class="centered card">
-          <api-navigation amf-model="[[amfModel]]" endpoints-opened></api-navigation>
+          <api-navigation amf-model="[[amfModel]]" endpoints-opened=""></api-navigation>
           <div class="demo-content">
             <div class="vertical-section-container centered card">
-              <api-headers-form
-                value="{{headers}}"
-                model="[[viewModel]]"
-                narrow="[[narrow]]"
-                allow-disable-params="[[allowDisableParams]]"
-                allow-custom="[[allowCustom]]"
-                allow-hide-optional="[[allowHideOptional]]"
-                no-docs="[[noDocs]]"
-                readonly="[[readonly]]"></api-headers-form>
+              <api-headers-form value="{{headers}}" model="[[viewModel]]" narrow="[[narrow]]" allow-disable-params="[[allowDisableParams]]" allow-custom="[[allowCustom]]" allow-hide-optional="[[allowHideOptional]]" no-docs="[[noDocs]]" readonly="[[readonly]]"></api-headers-form>
               <output>[[headers]]</output>
             </div>
 
@@ -148,11 +142,14 @@
         <demo-element id="helper" amf-model="{{amfModel}}"></demo-element>
       </template>
     </dom-bind>
-    <script>
+    <script type="module">
+    import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+    import {AmfHelperMixin, ns} from '@api-components/amf-helper-mixin/amf-helper-mixin.js';
+    class DemoElement extends AmfHelperMixin(PolymerElement) {}
+    window.customElements.define('demo-element', DemoElement);
+
     (function(scope) {
       scope._load = function() {
-        class DemoElement extends ApiElements.AmfHelperMixin(Polymer.Element) {}
-        window.customElements.define('demo-element', DemoElement);
         document.getElementById('apisList').selected = 0;
       };
 
@@ -185,7 +182,7 @@
         const webApi = scope.$.helper._computeWebApi(scope.amfModel);
         const method = scope.$.helper._computeMethodModel(webApi, selected);
         const expects = scope.$.helper._computeExpects(method);
-        const hKey = scope.$.helper._getAmfKey(ApiElements.Amf.ns.raml.vocabularies.http + 'header');
+        const hKey = scope.$.helper._getAmfKey(ns.raml.vocabularies.http + 'header');
         const headers = scope.$.helper._ensureArray(expects[hKey]);
         scope.amfHeaders = headers;
       };

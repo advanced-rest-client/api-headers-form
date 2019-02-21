@@ -5,29 +5,22 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   api-headers-form-item.html
+ *   api-headers-form-item.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
-/// <reference path="../paper-input/paper-input.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
-/// <reference path="../marked-element/marked-element.d.ts" />
-/// <reference path="../markdown-styles/markdown-styles.d.ts" />
-/// <reference path="../paper-autocomplete/paper-autocomplete.d.ts" />
-/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+
+import {afterNextRender} from '@polymer/polymer/lib/utils/render-status.js';
+
+import {IronValidatableBehavior} from '@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
+
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 
 /**
  * Headers form item.
@@ -35,9 +28,7 @@
  * Provides UI to enter headers data and autocomplete function for both header
  * names and values.
  */
-declare class ApiHeadersFormItem extends
-  Polymer.IronValidatableBehavior(
-  Object) {
+declare class ApiHeadersFormItem {
 
   /**
    * View model for the headers.
@@ -179,12 +170,12 @@ declare class ApiHeadersFormItem extends
    * Updates header description if the header doesn't contain a description
    * already.
    */
-  _updateHeaderDocs(info: any): void;
+  _updateHeaderDocs(info: object|null): void;
 
   /**
    * A handler called when the user selects a value suggestion.
    */
-  _onHeaderValueSelected(e: any): void;
+  _onHeaderValueSelected(e: CustomEvent|null): void;
 
   /**
    * Closes autocomplete for value when inpur looses focus.
@@ -193,6 +184,9 @@ declare class ApiHeadersFormItem extends
   _renderAutocomplete(input: any, suggestions: any): any;
 }
 
-interface HTMLElementTagNameMap {
-  "api-headers-form-item": ApiHeadersFormItem;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "api-headers-form-item": ApiHeadersFormItem;
+  }
 }

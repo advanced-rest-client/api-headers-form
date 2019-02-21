@@ -4,12 +4,18 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
     <title>api-headers-form test</title>
-    <script src="../../webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
-    <link rel="import" href="../api-headers-form-item.html">
-    <link rel="import" href="../../arc-polyfills/arc-polyfills.html">
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/@polymer/test-fixture/test-fixture.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/wct-mocha/wct-mocha.js"></script>
+    <script src="../node_modules/sinon/pkg/sinon.js"></script>
+
+    <script type="module" src="../api-headers-form-item.js"></script>
   </head>
   <body>
+    <arc-definitions></arc-definitions>
 
     <test-fixture id="Basic">
       <template>
@@ -41,7 +47,8 @@
       </template>
     </test-fixture>
 
-    <script>
+    <script type="module">
+    import '@advanced-rest-client/arc-definitions/arc-definitions.js';
     suite('api-headers-form-item', () => {
       function genModel(name) {
         name = name || 'test-name';
@@ -265,7 +272,127 @@
           }, 251);
         });
       });
-      a11ySuite('Basic');
+
+      suite('_docsAnimated()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Basic');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Change in docsOpened calls _docsAnimated()', (done) => {
+          const spy = sinon.spy(element, '_docsAnimated');
+          element.toggleDocs();
+          setTimeout(() => {
+            assert.isTrue(spy.called);
+            done();
+          }, 360);
+        });
+
+        test('Toggle "if" on the template', (done) => {
+          element.toggleDocs();
+          setTimeout(() => {
+            element.toggleDocs();
+            setTimeout(() => {
+              assert.isFalse(element.$.docsIf.if);
+              done();
+            }, 360);
+          }, 360);
+        });
+      });
+
+      suite('_headerNameFocus()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Basic');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Does nothing when readonly', () => {
+          element.readonly = true;
+          element._headerNameFocus({target: 'test'});
+          assert.isUndefined(element._nameInput);
+        });
+
+        test('Does nothing when _nameInput is set', () => {
+          element._nameInput = 'test';
+          element._headerNameFocus({target: 'other'});
+          assert.equal(element._nameInput, 'test');
+        });
+
+        test('Sets value from currentTarget', () => {
+          element._headerNameFocus({currentTarget: 'other'});
+          assert.equal(element._nameInput, 'other');
+        });
+
+        test('Sets value from target', () => {
+          element._headerNameFocus({target: 'other'});
+          assert.equal(element._nameInput, 'other');
+        });
+      });
+
+      suite('_onHeaderNameSelected()', () => {
+        let element;
+        setup(function() {
+          element = fixture('Basic');
+          element.model = genModel();
+        });
+
+        test('Sets name', () => {
+          element._onHeaderNameSelected({
+            detail: {
+              value: 'test-value'
+            }
+          });
+          assert.equal(element.name, 'test-value');
+        });
+      });
+
+      suite('_queryHeaderName()', () => {
+        let element;
+        setup(function(done) {
+          element = fixture('Basic');
+          element.model = genModel();
+          flush(() => done());
+        });
+
+        test('Calls _queryHeaderNameSuggestions()', () => {
+          const spy = sinon.spy(element, '_queryHeaderNameSuggestions');
+          element._queryHeaderName({
+            detail: {
+              value: 'test'
+            }
+          });
+          assert.equal(spy.args[0][0], 'test');
+        });
+
+        test('Clean up when no suggestions', () => {
+          element._nameSuggestions = [];
+          element._nameSuggestionsOpened = true;
+          element._queryHeaderName({
+            detail: {
+              value: 'no way to have a suggestion'
+            }
+          });
+          assert.isUndefined(element._nameSuggestions);
+          assert.isFalse(element._nameSuggestionsOpened);
+        });
+
+        test('Sets _nameSuggestions', () => {
+          element._queryHeaderName({
+            detail: {
+              value: 'accept-encoding'
+            }
+          });
+          assert.lengthOf(element._nameSuggestions, 1);
+          assert.deepEqual(element._nameSuggestions, [{
+            value: 'Accept-Encoding',
+            display: 'Accept-Encoding'
+          }]);
+        });
+      });
     });
     </script>
 

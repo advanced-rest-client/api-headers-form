@@ -5,25 +5,24 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   api-headers-form.html
+ *   api-headers-form.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../iron-form/iron-form.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../arc-definitions/arc-definitions.d.ts" />
-/// <reference path="../paper-checkbox/paper-checkbox.d.ts" />
-/// <reference path="../api-form-mixin/api-form-mixin.d.ts" />
-/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
-/// <reference path="api-headers-form-item.d.ts" />
+import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+
+import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+
+import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
+
+import {IronValidatableBehavior} from '@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
+
+import {afterNextRender} from '@polymer/polymer/lib/utils/render-status.js';
+
+import {ApiFormMixin} from '@api-components/api-form-mixin/api-form-mixin.js';
 
 /**
  * HTTP headers form build from AMF json/ld model.
@@ -99,9 +98,8 @@
  * See `api-headers-form-item` and `api-form-mixin/api-form-styles` for more styling API.
  */
 declare class ApiHeadersForm extends
-  Polymer.IronValidatableBehavior(
-  ArcBehaviors.ApiFormMixin(
-  Object)) {
+  ApiFormMixin(
+  Object) {
 
   /**
    * Current value of the headers. Changing the value will update the list
@@ -162,6 +160,9 @@ declare class ApiHeadersForm extends
   _queryHeaderData(name: String|null): object|null|undefined;
 }
 
-interface HTMLElementTagNameMap {
-  "api-headers-form": ApiHeadersForm;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "api-headers-form": ApiHeadersForm;
+  }
 }
