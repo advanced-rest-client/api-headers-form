@@ -1,17 +1,17 @@
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-import {IronValidatableBehavior} from '@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
-import {afterNextRender} from '@polymer/polymer/lib/utils/render-status.js';
-import {ApiFormMixin} from '@api-components/api-form-mixin/api-form-mixin.js';
-import '@api-components/api-form-mixin/api-form-styles.js';
-import '@polymer/polymer/lib/elements/dom-if.js';
-import '@polymer/polymer/lib/elements/dom-repeat.js';
-import '@polymer/iron-form/iron-form.js';
-import '@polymer/paper-icon-button/paper-icon-button.js';
-import '@advanced-rest-client/arc-icons/arc-icons.js';
-import '@advanced-rest-client/arc-definitions/arc-definitions.js';
-import '@polymer/paper-checkbox/paper-checkbox.js';
+import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
+import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
+import {mixinBehaviors} from '../../@polymer/polymer/lib/legacy/class.js';
+import {IronValidatableBehavior} from '../../@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
+import {afterNextRender} from '../../@polymer/polymer/lib/utils/render-status.js';
+import {ApiFormMixin} from '../../@api-components/api-form-mixin/api-form-mixin.js';
+import '../../@api-components/api-form-mixin/api-form-styles.js';
+import '../../@polymer/polymer/lib/elements/dom-if.js';
+import '../../@polymer/polymer/lib/elements/dom-repeat.js';
+import '../../@polymer/iron-form/iron-form.js';
+import '../../@polymer/paper-icon-button/paper-icon-button.js';
+import '../../@advanced-rest-client/arc-icons/arc-icons.js';
+import '../../@advanced-rest-client/arc-definitions/arc-definitions.js';
+import '../../@polymer/paper-checkbox/paper-checkbox.js';
 import './api-headers-form-item.js';
 /**
  * HTTP headers form build from AMF json/ld model.
