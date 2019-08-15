@@ -1,21 +1,15 @@
-import {PolymerElement} from '../../@polymer/polymer/polymer-element.js';
-import {mixinBehaviors} from '../../@polymer/polymer/lib/legacy/class.js';
-import {afterNextRender} from '../../@polymer/polymer/lib/utils/render-status.js';
-import {IronValidatableBehavior} from '../../@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
-import {html} from '../../@polymer/polymer/lib/utils/html-tag.js';
-import '../../@polymer/polymer/lib/elements/dom-if.js';
-import '../../@polymer/polymer/lib/elements/dom-repeat.js';
-import '../../@polymer/paper-button/paper-button.js';
-import '../../@advanced-rest-client/arc-icons/arc-icons.js';
-import '../../@polymer/iron-flex-layout/iron-flex-layout.js';
-import '../../@polymer/iron-collapse/iron-collapse.js';
-import '../../@polymer/paper-input/paper-input.js';
-import '../../@polymer/paper-icon-button/paper-icon-button.js';
-import '../../@api-components/api-property-form-item/api-property-form-item.js';
-import '../../@polymer/marked-element/marked-element.js';
-import '../../@advanced-rest-client/markdown-styles/markdown-styles.js';
-import '../../@advanced-rest-client/paper-autocomplete/paper-autocomplete.js';
-import '../../@api-components/api-form-mixin/api-form-styles.js';
+import { html, css, LitElement } from 'lit-element';
+import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
+import markdownStyles from '@advanced-rest-client/markdown-styles/markdown-styles.js';
+import formStyles from '@api-components/api-form-mixin/api-form-styles.js';
+import '@anypoint-web-components/anypoint-button/anypoint-button.js';
+import '@advanced-rest-client/arc-icons/arc-icons.js';
+import '@anypoint-web-components/anypoint-input/anypoint-input.js';
+import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
+import '@api-components/api-property-form-item/api-property-form-item.js';
+import '@advanced-rest-client/arc-marked/arc-marked.js';
+import '@anypoint-web-components/anypoint-autocomplete/anypoint-autocomplete.js';
+import '@polymer/iron-icon/iron-icon.js';
 /**
  * Headers form item.
  *
@@ -23,258 +17,317 @@ import '../../@api-components/api-form-mixin/api-form-styles.js';
  * names and values.
  *
  * @customElement
- * @polymer
  * @demo demo/index.html
  * @polymerBehavior IronValidatableBehavior
  */
-class ApiHeadersFormItem extends
-  mixinBehaviors(IronValidatableBehavior, PolymerElement) {
-  static get template() {
-    return html`<style include="api-form-styles"></style>
-    <style include="markdown-styles">
-    :host {
-      display: block;
-      @apply --api-headers-form-item;
-    }
+class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
+  static get styles() {
+    return [
+      markdownStyles,
+      formStyles,
+      css`
+      :host {
+        display: block;
+      }
 
-    .form-row {
-      @apply --layout-horizontal;
-      @apply --layout-center;
-      @apply --layout-flex;
-    }
+      .form-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex: 1;
+      }
 
-    .value-field,
-    .name-field {
-      position: relative;
-    }
+      .value-field,
+      .name-field {
+        position: relative;
+      }
 
-    .name-field,
-    .value-field {
-      @apply --layout-flex;
-      @apply --layout-horizontal;
-      @apply --layout-start;
-    }
+      .name-field,
+      .value-field {
+        display: flex;
+        flex-direction: row;
+        flex: 1;
+        align-items: flex-start;
+      }
 
-    .param-name,
-    api-property-form-item {
-      @apply --layout-flex;
-    }
+      .param-name,
+      api-property-form-item {
+        flex: 1;
+      }
 
-    api-property-form-item[is-array] {
-      margin-top: 8px;
-    }
+      api-property-form-item[isarray] {
+        margin-top: 8px;
+      }
 
-    .param-name {
-      margin-right: 12px;
-      @apply --api-headers-form-name-input;
-    }
+      .param-name {
+        margin-right: 12px;
+      }
 
-    :host([narrow]) .form-row {
-      display: block;
-    }
+      :host([narrow]) .form-row {
+        display: block;
+      }
 
-    :host([narrow]) .param-name {
-      margin-right: 0;
-      @apply --api-headers-form-name-input-narrow;
-    }
+      :host([narrow]) .param-name {
+        margin-right: 0;
+      }
 
-    [hidden] {
-      display: none !important;
-    }
+      [hidden] {
+        display: none !important;
+      }
 
-    :host([is-array]) .value-field {
-      @apply --layout-start;
-      @apply --api-headers-form-array-parameter;
-    }
+      :host([isarray]) .value-field {
+        align-items: flex-start;
+      }
 
-    paper-icon-button {
-      margin-top: var(--api-headers-editore-hint-icon-margin-top, 16px);
-    }
+      anypoint-icon-button {
+        margin-top: var(--api-headers-editore-hint-icon-margin-top, 16px);
+      }
 
-    :host([narrow]) paper-icon-button {
-      margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
-    }
+      :host([narrow]) anypoint-icon-button {
+        margin-top: var(--api-headers-editore-hint-icon-margin-top-narrow, 16px);
+      }
 
-    .custom-wrapper {
-      @apply --layout-horizontal;
-      @apply --layout-start;
-    }
+      .custom-wrapper {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+      }
 
-    .docs {
-      margin-right: 0;
-    }
-    </style>
-    <template is="dom-if" if="[[!isCustom]]" restamp="">
-      <div class="value-field api-field">
-        <api-property-form-item model="[[model]]"
-          name="[[name]]"
-          value="{{value}}"
-          data-type="typed"
-          required\$="[[required]]"
-          on-focus="_customChangeFocus"
-          on-blur="_closeAutocomplete" readonly="[[readonly]]"></api-property-form-item>
-        <template is="dom-if" if="[[model.hasDescription]]">
-          <paper-icon-button class="hint-icon" title="Display documentation"
-            icon="arc:help" on-click="toggleDocs"></paper-icon-button>
-        </template>
+      .docs {
+        margin-right: 0;
+      }
+      `
+    ];
+  }
+
+  _customTemplate() {
+    const {
+      model,
+      name,
+      value,
+      readOnly,
+      _nameInput,
+      _nameSuggestions,
+      _nameSuggestionsOpened
+    } = this;
+    const renderNameSuggestions = this._renderAutocomplete(_nameInput, _nameSuggestions);
+    return html`<div class="custom-wrapper">
+      <div class="form-row custom-field">
+        <div class="name-field">
+          <anypoint-input
+            .value="${name || ''}"
+            class="param-name"
+            type="text"
+            pattern="\\S*"
+            ?readOnly="${readOnly}"
+            required
+            @value-changed="${this._nameValueHandler}"
+            @focus="${this._headerNameFocus}"
+            invalidmessage="Header name is not valid"
+            @input="${this._queryHeaderName}">
+            <label slot="label">Header name</label>
+          </anypoint-input>
+          ${renderNameSuggestions ? html`
+            <anypoint-autocomplete
+              class="name-suggestions"
+              .target="${_nameInput}"
+              .source="${_nameSuggestions}"
+              .opened="${_nameSuggestionsOpened}"
+              @selected="${this._onHeaderNameSelected}"
+              @opened-changed="${this._nameSuggestOpenHandler}"></anypoint-autocomplete>` : undefined}
+        </div>
+        <div class="value-field">
+          <api-property-form-item
+            name="${name}"
+            data-type="custom"
+            .model="${model}"
+            .value="${value || ''}"
+            ?readonly="${readOnly}"
+            @value-changed="${this._valueChangeHandler}"
+            @focus="${this._customChangeFocus}"></api-property-form-item>
+        </div>
+      </div>
+      <div class="actions">
+        ${model.hasDescription ? html`<anypoint-icon-button
+          class="hint-icon"
+          title="Show documentation"
+          @click="${this.toggleDocs}">
+          <iron-icon icon="arc:help"></iron-icon>
+        </anypoint-icon-button>` : undefined}
         <slot name="suffix"></slot>
       </div>
-    </template>
-    <template is="dom-if" if="[[isCustom]]" restamp="">
-      <div class="custom-wrapper">
-        <div class="form-row custom-field">
-          <div class="name-field">
-            <paper-input value="{{name}}" label="Header name" class="param-name"
-              on-focus="_headerNameFocus" type="text" pattern="\\S*"
-              error="Header name is not valid" readonly="[[readonly]]"
-              on-input="_queryHeaderName" required=""></paper-input>
-            <template is="dom-if" if="[[_renderAutocomplete(_nameInput, _nameSuggestions)]]">
-              <paper-autocomplete class="name-suggestions" dynamic-align=""
-                vertical-align="bottom" horizontal-align="left" vertical-offset="56"
-                target="[[_nameInput]]" source="[[_nameSuggestions]]"
-                on-selected="_onHeaderNameSelected" opened="{{_nameSuggestionsOpened}}"></paper-autocomplete>
-            </template>
-          </div>
-          <div class="value-field">
-            <api-property-form-item model="[[model]]" name="[[name]]" value="{{value}}"
-              data-type="custom" on-focus="_customChangeFocus"
-              readonly="[[readonly]]"></api-property-form-item>
-          </div>
-        </div>
-        <div class="actions">
-          <template is="dom-if" if="[[model.hasDescription]]">
-            <paper-icon-button class="hint-icon" title="Display documentation"
-              icon="arc:help" on-click="toggleDocs"></paper-icon-button>
-          </template>
-          <slot name="suffix"></slot>
-        </div>
-      </div>
-    </template>
-    <template is="dom-if" restamp="" id="docsIf" on-dom-change="_docsRendered">
-      <div class="docs">
-        <iron-collapse opened="[[docsOpened]]" on-transitionend="_docsAnimated">
-          <marked-element markdown="[[model.description]]">
-            <div slot="markdown-html" class="markdown-body"></div>
-          </marked-element>
-        </iron-collapse>
-      </div>
-    </template>
-    <template is="dom-if" if="[[_renderAutocomplete(_valueInput, _valueSuggestions)]]">
-      <paper-autocomplete class="value-autocomplete"
-        on-selected="_onHeaderValueSelected" position-target="[[_valueInput]]"
-        dynamic-align="" vertical-align="bottom" horizontal-align="left"
-        vertical-offset="56" target="[[_valueInput]]" source="[[_valueSuggestions]]"></paper-autocomplete>
-    </template>
+    </div>`;
+  }
+
+  _modelTemplate() {
+    const {
+      model,
+      name,
+      value,
+      readOnly,
+      required
+    } = this;
+    return html`<div class="value-field api-field">
+      <api-property-form-item
+        .model="${model}"
+        name="${name}"
+        .value="${value}"
+        data-type="typed"
+        ?required="${required}"
+        ?readonly="${readOnly}"
+        @value-changed="${this._valueChangeHandler}"
+        @focus="${this._customChangeFocus}"
+        @blur="${this._closeAutocomplete}"></api-property-form-item>
+        ${model.hasDescription ? html`<anypoint-icon-button
+          class="hint-icon"
+          title="Show documentation"
+          @click="${this.toggleDocs}">
+          <iron-icon icon="arc:help"></iron-icon>
+        </anypoint-icon-button>` : undefined}
+      <slot name="suffix"></slot>
+    </div>`;
+  }
+
+  render() {
+    const {
+      model,
+      isCustom,
+      docsOpened,
+      _valueInput,
+      _valueSuggestions
+    } = this;
+
+    const hasUtocomplete = this._renderAutocomplete(_valueInput, _valueSuggestions);
+    return html`
+    ${isCustom ? this._customTemplate() : this._modelTemplate()}
+
+    ${docsOpened && model.description ? html`<arc-marked .markdown="${model.description}">
+      <div slot="markdown-html" class="markdown-body"></div>
+    </arc-marked>` : undefined}
+
+    ${hasUtocomplete ? html`<anypoint-autocomplete
+      class="value-autocomplete"
+      @selected="${this._onHeaderValueSelected}"
+      .positionTarget="${_valueInput}"
+      .target="${_valueInput}"
+      .source="${_valueSuggestions}"></anypoint-autocomplete>` : undefined}
     `;
   }
-  static get is() {
-    return 'api-headers-form-item';
-  }
+
   static get properties() {
     return {
       /**
        * View model for the headers.
        */
-      model: Object,
+      model: { type: Object },
       /**
        * The name of this element.
        */
-      name: {
-        notify: true,
-        type: String,
-        observer: '_nameChanged'
-      },
+      name: { type: String },
       /**
        * The value of this element.
        */
-      value: {
-        notify: true,
-        type: String
-      },
+      value: { type: String },
       /**
        * If set it renders a narrow layout
        */
-      narrow: {
-        type: Boolean,
-        value: false,
-        reflectToAttribute: true
-      },
+      narrow: { type: Boolean, reflect: true },
       /**
        * True to render documentation (if set in model)
        */
-      docsOpened: Boolean,
+      docsOpened: { type: Boolean },
       /**
        * Set if the header is not specified in the RAML type (is a custom
        * header).
        */
-      isCustom: {
-        type: Boolean,
-        value: false
-      },
+      isCustom: { type: Boolean },
       /**
        * If set it is render the item control as an array item (adds more
        * spacing to the element)
        */
-      isArray: {
-        type: Boolean,
-        reflectToAttribute: true
-      },
+      isArray: { type: Boolean, reflect: true },
       /**
        * List of value suggestion for current header. The list is updated
        * automatically when header name changes
        */
-      _valueSuggestions: Array,
-      _nameSuggestions: Array,
+      _valueSuggestions: { type: Array },
+      _nameSuggestions: { type: Array },
       // Reference to header value input.
-      _valueInput: Object,
+      _valueInput: { type: Object },
       // Reference to the name input field
-      _nameInput: Object,
+      _nameInput: { type: Object },
       // True when this model is required
-      required: Boolean,
+      required: { type: Boolean },
       /**
        * True when suggestions popover is opened
        */
-      _nameSuggestionsOpened: Boolean,
+      _nameSuggestionsOpened: { type: Boolean },
       /**
        * Prohibits rendering of the documentation (the icon and the
        * description).
        * Note, Set is separately for `api-view-model-transformer`
        * component as this only affects "custom" items.
        */
-      noDocs: Boolean,
+      noDocs: { type: Boolean },
       /**
        * When set the editor is in read only mode.
        */
-      readonly: Boolean
+      readOnly: { type: Boolean }
     };
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  set name(value) {
+    const old = this._name;
+    /* istanbul ignore if */
+    if (old === value) {
+      return;
+    }
+    this._name = value;
+    this.requestUpdate('name', old);
+    this._nameChanged(value);
+    this.dispatchEvent(new CustomEvent('name-changed', {
+      detail: {
+        value
+      }
+    }));
+  }
+
+  get value() {
+    return this._value;
+  }
+
+  set value(value) {
+    const old = this._value;
+    /* istanbul ignore if */
+    if (old === value) {
+      return;
+    }
+    this._value = value;
+    this.requestUpdate('value', old);
+    this.dispatchEvent(new CustomEvent('value-changed', {
+      detail: {
+        value
+      }
+    }));
+  }
+
+  constructor() {
+    super();
+    this.value = '';
   }
 
   // Toggles documentation (if available)
   toggleDocs() {
-    if (!this.docsOpened) {
-      this.$.docsIf.if = true;
-    } else {
-      this.docsOpened = false;
-    }
+    this.docsOpened = !this.docsOpened;
   }
 
-  _docsRendered(e) {
-    if (!e.target.if) {
-      return;
-    }
-    if (!this.docsOpened) {
-      this.docsOpened = true;
-    }
-  }
-
-  _docsAnimated() {
-    if (this.docsOpened === false) {
-      this.$.docsIf.if = false;
-    }
-  }
   // Handler for header name field focus
   _headerNameFocus(e) {
-    if (this.readonly || this._nameInput) {
+    if (this.readOnly || this._nameInput) {
       return;
     }
     this._nameInput = e.currentTarget || e.target;
@@ -284,7 +337,7 @@ class ApiHeadersFormItem extends
    * @param {CustomEvent} e
    */
   _onHeaderNameSelected(e) {
-    this.set('name', e.detail.value);
+    this.name = e.detail.value;
   }
   /**
    * Handler for autocomplete element. Query the datastore for suggestions.
@@ -308,9 +361,7 @@ class ApiHeadersFormItem extends
     if (!ac) {
       return;
     }
-    ac.opened = true;
-    ac._previousQuery = '';
-    ac._valueChanged();
+    ac.renderSuggestions();
   }
   /**
    * Dispatches `query-headers` custom event to retreive from the application
@@ -357,7 +408,7 @@ class ApiHeadersFormItem extends
       }
       return;
     }
-    afterNextRender(this, () => {
+    setTimeout(() => {
       const info = this._queryHeaderNameSuggestions(name);
       this._updateValueAutocomplete(info);
       if (!this.noDocs) {
@@ -370,7 +421,7 @@ class ApiHeadersFormItem extends
    * Sets the `_valueInput` proeprty for value autosugession
    */
   _customChangeFocus() {
-    if (this.readonly) {
+    if (this.readOnly) {
       return;
     }
     if (this._valueInput) {
@@ -378,9 +429,7 @@ class ApiHeadersFormItem extends
       if (!ac) {
         return;
       }
-      ac.opened = true;
-      ac._previousQuery = '';
-      ac._valueChanged();
+      ac.renderSuggestions();
       return;
     }
     if (this.__customChangeFocus) {
@@ -388,14 +437,12 @@ class ApiHeadersFormItem extends
     }
     this.__customChangeFocus = true;
     this._valueInput = this.shadowRoot.querySelector('api-property-form-item');
-    afterNextRender(this, () => {
+    setTimeout(() => {
       const ac = this.shadowRoot.querySelector('.value-autocomplete');
       if (!ac) {
         return;
       }
-      ac.opened = true;
-      ac._previousQuery = '';
-      ac._valueChanged();
+      ac.renderSuggestions();
     });
   }
 
@@ -442,18 +489,21 @@ class ApiHeadersFormItem extends
     }
     if (!info || info.length !== 1) {
       if (model.hasDescription && model.__ownDescription) {
-        this.set('model.description', undefined);
-        this.set('model.hasDescription', false);
+        this.model.description = undefined;
+        this.model.hasDescription = false;
         this.model.__ownDescription = false;
+        this.model = Object.assign({}, this.model);
       }
       return;
     }
     if (model.hasDescription) {
       return;
     }
-    this.set('model.description', info[0].desc);
-    this.set('model.hasDescription', true);
+
+    this.model.description = info[0].desc;
+    this.model.hasDescription = true;
     this.model.__ownDescription = true;
+    this.model = Object.assign({}, this.model);
   }
 
   /**
@@ -461,7 +511,7 @@ class ApiHeadersFormItem extends
    * @param {CustomEvent} e
    */
   _onHeaderValueSelected(e) {
-    this.set('value', e.detail.value);
+    this.value = e.detail.value;
   }
   /**
    * Closes autocomplete for value when inpur looses focus.
@@ -487,6 +537,18 @@ class ApiHeadersFormItem extends
   _renderAutocomplete(input, suggestions) {
     return !!(input && suggestions && suggestions.length);
   }
+
+  _nameValueHandler(e) {
+    this.name = e.target.value;
+  }
+
+  _nameSuggestOpenHandler(e) {
+    this._nameSuggestionsOpened = e.target.value;
+  }
+
+  _valueChangeHandler(e) {
+    this.value = e.target.value;
+  }
 }
 
-window.customElements.define(ApiHeadersFormItem.is, ApiHeadersFormItem);
+window.customElements.define('api-headers-form-item', ApiHeadersFormItem);
