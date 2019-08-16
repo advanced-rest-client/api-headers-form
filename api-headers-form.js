@@ -269,6 +269,11 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     this[key] = value;
     this.addEventListener(eventType, value);
   }
+
+  firstUpdated() {
+    this.__firstUpdatedReady = this;
+    this._autoDescribeModel(this.model);
+  }
   /**
    * Appends an empty header to the list.
    */
@@ -298,7 +303,9 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       this.invalid = false;
     }
     this._updateValue(this.autoValidate);
-    this._autoDescribeModel(model);
+    if (this.__firstUpdatedReady) {
+      this._autoDescribeModel(model);
+    }
   }
   /**
    * Updates value of the element when model change.
@@ -362,7 +369,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
    * @param {Array} model View model
    */
   _autoDescribeModel(model) {
-    if (this.noDocs) {
+    if (this.noDocs || !model) {
       return;
     }
     model.forEach((item, index) => this._fillModelDescription(item, index));
@@ -394,7 +401,11 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
    * @return {Object|undefined} Header definition or undefined.
    */
   _queryHeaderData(name) {
-    const suggestions = this.shadowRoot.querySelector('arc-definitions').queryHeaders(name, 'request');
+    const node = this.shadowRoot.querySelector('arc-definitions');
+    if (!node) {
+      return;
+    }
+    const suggestions = node.queryHeaders(name, 'request');
     if (!suggestions) {
       return;
     }
