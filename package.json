@@ -1,20 +1,24 @@
 {
   "name": "@api-components/api-headers-form",
-  "version": "2.0.4",
   "description": "HTTP headers form build from AMF json/ld model",
-  "main": "api-headers-form.html",
+  "version": "3.0.0",
   "license": "Apache-2.0",
-  "devDependencies": {
-    "@api-components/api-model-generator": "^0.1.8",
-    "@polymer/gen-typescript-declarations": "^1.6.0"
-  },
-  "private": false,
-  "scripts": {
-    "lint": "lint api-headers-form.html api-headers-form-item.html",
-    "test-sauce": "polymer test --plugin sauce --job-name \"api-headers-form:local-test\"",
-    "test": "polymer test --plugin local",
-    "update-types": "gen-typescript-declarations --deleteExisting --outDir ."
-  },
+  "main": "api-headers-form.js",
+  "keywords": [
+    "web-components",
+    "headers",
+    "editor",
+    "advanced-rest-client",
+    "api-console"
+  ],
+  "authors": [
+    "Pawel Psztyc",
+    "The Advanced REST client authors <arc@mulesoft.com>"
+  ],
+  "contributors": [
+    "Pawel Psztyc",
+    "The Advanced REST client authors <arc@mulesoft.com>"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/advanced-rest-client/api-headers-form.git"
@@ -22,5 +26,70 @@
   "bugs": {
     "url": "https://github.com/advanced-rest-client/api-headers-form/issues",
     "email": "arc@mulesoft.com"
+  },
+  "dependencies": {
+    "@advanced-rest-client/arc-definitions": "^3.0.0",
+    "@advanced-rest-client/arc-icons": "^3.0.0",
+    "@advanced-rest-client/arc-marked": "^1.0.2",
+    "@advanced-rest-client/markdown-styles": "^3.1.0",
+    "@anypoint-web-components/anypoint-autocomplete": "^0.1.0",
+    "@anypoint-web-components/anypoint-button": "^1.0.3",
+    "@anypoint-web-components/anypoint-checkbox": "^1.0.1",
+    "@anypoint-web-components/anypoint-dropdown-menu": "^0.1.4",
+    "@anypoint-web-components/anypoint-input": "^0.1.2",
+    "@anypoint-web-components/anypoint-listbox": "^1.0.2",
+    "@anypoint-web-components/validatable-mixin": "^1.0.1",
+    "@api-components/api-form-mixin": "^3.0.3",
+    "@api-components/api-property-form-item": "^3.0.1",
+    "@polymer/iron-form": "^3.0.0",
+    "@polymer/iron-icon": "^3.0.1",
+    "lit-element": "^2.2.1"
+  },
+  "devDependencies": {
+    "@advanced-rest-client/arc-demo-helper": "^1.0.14",
+    "@advanced-rest-client/eslint-config": "^1.0.6",
+    "@advanced-rest-client/prettier-config": "^0.1.0",
+    "@advanced-rest-client/testing-karma-sl": "^1.0.3",
+    "@api-components/amf-helper-mixin": "^3.0.2",
+    "@api-components/api-model-generator": "^0.1.12",
+    "@api-components/api-navigation": "^3.0.0",
+    "@api-components/api-view-model-transformer": "^3.0.0",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^7.0.0",
+    "@open-wc/testing": "^2.2.1",
+    "@open-wc/testing-karma": "^3.1.5",
+    "@polymer/gen-typescript-declarations": "^1.6.2",
+    "@polymer/iron-test-helpers": "^3.0.1",
+    "@polymer/paper-toggle-button": "^3.0.1",
+    "deepmerge": "^4.0.0",
+    "es-dev-server": "^1.8.3",
+    "husky": "^1.0.0",
+    "karma": "^4.2.0",
+    "lint-staged": "^9.2.1",
+    "sinon": "^7.4.1",
+    "web-animations-js": "^2.3.2"
+  },
+  "scripts": {
+    "test": "karma start --coverage",
+    "update-types": "gen-typescript-declarations --deleteExisting --outDir .",
+    "start": "es-dev-server --app-index demo/index.html --node-resolve --open --watch",
+    "start:compatibility": "es-dev-server --app-index demo/index.html --compatibility all --node-resolve --open --watch",
+    "lint:eslint": "eslint --ext .js,.html .",
+    "format:eslint": "eslint --ext .js,.html . --fix",
+    "lint:prettier": "prettier \"**/*.js\" --list-different || (echo '↑↑ these files are not prettier formatted ↑↑' && exit 1)",
+    "format:prettier": "prettier \"**/*.js\" --write",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "format": "npm run format:eslint && npm run format:prettier",
+    "test:watch": "karma start --auto-watch=true --single-run=false",
+    "test:legacy": "karma start --legacy --coverage",
+    "test:legacy:watch": "karma start --legacy --auto-watch=true --single-run=false",
+    "test:sl": "karma start karma.sl.config.js --legacy --coverage",
+    "generate-model": "node demo/model.js"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "git add"
+    ]
   }
 }

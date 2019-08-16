@@ -5,29 +5,16 @@
  *   https://github.com/Polymer/tools/tree/master/packages/gen-typescript-declarations
  *
  * To modify these typings, edit the source file(s):
- *   api-headers-form-item.html
+ *   api-headers-form-item.js
  */
 
 
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-/// <reference path="../polymer/types/polymer-element.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-if.d.ts" />
-/// <reference path="../polymer/types/lib/elements/dom-repeat.d.ts" />
-/// <reference path="../polymer/types/lib/utils/render-status.d.ts" />
-/// <reference path="../paper-button/paper-button.d.ts" />
-/// <reference path="../arc-icons/arc-icons.d.ts" />
-/// <reference path="../iron-flex-layout/iron-flex-layout.d.ts" />
-/// <reference path="../iron-collapse/iron-collapse.d.ts" />
-/// <reference path="../iron-validatable-behavior/iron-validatable-behavior.d.ts" />
-/// <reference path="../paper-input/paper-input.d.ts" />
-/// <reference path="../paper-icon-button/paper-icon-button.d.ts" />
-/// <reference path="../api-property-form-item/api-property-form-item.d.ts" />
-/// <reference path="../marked-element/marked-element.d.ts" />
-/// <reference path="../markdown-styles/markdown-styles.d.ts" />
-/// <reference path="../paper-autocomplete/paper-autocomplete.d.ts" />
-/// <reference path="../api-form-mixin/api-form-styles.d.ts" />
+import {html, css, LitElement} from 'lit-element';
+
+import {ValidatableMixin} from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
 
 /**
  * Headers form item.
@@ -35,14 +22,7 @@
  * Provides UI to enter headers data and autocomplete function for both header
  * names and values.
  */
-declare class ApiHeadersFormItem extends
-  Polymer.IronValidatableBehavior(
-  Object) {
-
-  /**
-   * View model for the headers.
-   */
-  model: object|null|undefined;
+declare class ApiHeadersFormItem {
 
   /**
    * The name of this element.
@@ -53,6 +33,11 @@ declare class ApiHeadersFormItem extends
    * The value of this element.
    */
   value: string|null|undefined;
+
+  /**
+   * View model for the headers.
+   */
+  model: object|null|undefined;
 
   /**
    * If set it renders a narrow layout
@@ -99,11 +84,6 @@ declare class ApiHeadersFormItem extends
   required: boolean|null|undefined;
 
   /**
-   * True when suggestions popover is opened
-   */
-  _nameSuggestionsOpened: boolean|null|undefined;
-
-  /**
    * Prohibits rendering of the documentation (the icon and the
    * description).
    * Note, Set is separately for `api-view-model-transformer`
@@ -114,19 +94,31 @@ declare class ApiHeadersFormItem extends
   /**
    * When set the editor is in read only mode.
    */
-  readonly: boolean|null|undefined;
+  readOnly: boolean|null|undefined;
+
+  /**
+   * Enables Anypoint legacy styling
+   */
+  legacy: boolean|null|undefined;
+
+  /**
+   * Enables Material Design outlined style
+   */
+  outlined: boolean|null|undefined;
+  _customTemplate(): any;
+  _modelTemplate(): any;
+  render(): any;
 
   /**
    * Toggles documentation (if available)
    */
   toggleDocs(): void;
-  _docsRendered(e: any): void;
-  _docsAnimated(): void;
 
   /**
-   * Handler for header name field focus
+   * Handler for header name field focus. It sets `_nameInput` property and
+   * requests for header names suggestions to render the autocomplete.
    */
-  _headerNameFocus(e: any): void;
+  _headerNameFocus(e: CustomEvent|null): void;
 
   /**
    * A handler called when the user selects a suggestion.
@@ -138,7 +130,14 @@ declare class ApiHeadersFormItem extends
    *
    * @param e Autocomplete event
    */
-  _queryHeaderName(e: Event|null): void;
+  _headerNameHandler(e: Event|null): void;
+
+  /**
+   * Queries and sets suggestions for name.
+   *
+   * @param query The header name to query for.
+   */
+  _setNameSuggestions(query: String|null): void;
 
   /**
    * Dispatches `query-headers` custom event to retreive from the application
@@ -161,12 +160,6 @@ declare class ApiHeadersFormItem extends
   _nameChanged(name: String|null): void;
 
   /**
-   * Handler for custom value focus event.
-   * Sets the `_valueInput` proeprty for value autosugession
-   */
-  _customChangeFocus(): void;
-
-  /**
    * Updates header value autocomplete if header definition contains
    * the `autocomplete` entry. It only sets the autocomplete value when
    * only one header has been found for current input.
@@ -179,20 +172,51 @@ declare class ApiHeadersFormItem extends
    * Updates header description if the header doesn't contain a description
    * already.
    */
-  _updateHeaderDocs(info: any): void;
+  _updateHeaderDocs(info: object|null): void;
 
   /**
-   * A handler called when the user selects a value suggestion.
+   * Tests whether autocomplete element should be rendered.
+   *
+   * @param input Target element for autocomplete
+   * @param suggestions List of suggestions.
+   * @returns True when has the input and some suggestions.
    */
-  _onHeaderValueSelected(e: any): void;
+  _renderAutocomplete(input: Element|null, suggestions: any[]|null): Boolean|null;
 
   /**
-   * Closes autocomplete for value when inpur looses focus.
+   * Handler for name field value change. Sets new name on this element.
    */
-  _closeAutocomplete(): void;
-  _renderAutocomplete(input: any, suggestions: any): any;
+  _nameValueHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for name autocomplete opened changed event.
+   * It sets opened flag so the element won't request for value suggestions while
+   * autocomplete is opened.
+   */
+  _nameSuggestOpenHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for value change from the value input
+   */
+  _valueChangeHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for value autocomplete selection event.
+   * Validates the input as after the autocomplete updates the value programatically
+   * it won't trigger validation.
+   */
+  _valueSelectedHandler(): void;
+
+  /**
+   * If it is custom header then it focuses on the name ionput.
+   * Otherwise it focuses on API form item.
+   */
+  focus(): void;
 }
 
-interface HTMLElementTagNameMap {
-  "api-headers-form-item": ApiHeadersFormItem;
+declare global {
+
+  interface HTMLElementTagNameMap {
+    "api-headers-form-item": ApiHeadersFormItem;
+  }
 }
