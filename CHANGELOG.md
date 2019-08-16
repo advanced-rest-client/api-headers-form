@@ -204,3 +204,17 @@
 
 
 
+## 3.0.2 (2019-08-16)
+
+
+### Bug Fixes
+
+* fixing dynamic initialization when DOM is not ready ([ef2549e](https://github.com/advanced-rest-client/api-headers-form/commit/ef2549e))
+
+
+### Features
+
+* `noDocs` now skip rendering description and hint icons ([2c055f5](https://github.com/advanced-rest-client/api-headers-form/commit/2c055f5))
+
+
+
