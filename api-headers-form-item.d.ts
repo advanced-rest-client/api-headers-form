@@ -12,15 +12,9 @@
 // tslint:disable:variable-name Describing an API that's defined elsewhere.
 // tslint:disable:no-any describes the API as best we are able today
 
-import {PolymerElement} from '@polymer/polymer/polymer-element.js';
+import {html, css, LitElement} from 'lit-element';
 
-import {mixinBehaviors} from '@polymer/polymer/lib/legacy/class.js';
-
-import {afterNextRender} from '@polymer/polymer/lib/utils/render-status.js';
-
-import {IronValidatableBehavior} from '@polymer/iron-validatable-behavior/iron-validatable-behavior.js';
-
-import {html} from '@polymer/polymer/lib/utils/html-tag.js';
+import {ValidatableMixin} from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
 
 /**
  * Headers form item.
@@ -31,11 +25,6 @@ import {html} from '@polymer/polymer/lib/utils/html-tag.js';
 declare class ApiHeadersFormItem {
 
   /**
-   * View model for the headers.
-   */
-  model: object|null|undefined;
-
-  /**
    * The name of this element.
    */
   name: string|null|undefined;
@@ -44,6 +33,11 @@ declare class ApiHeadersFormItem {
    * The value of this element.
    */
   value: string|null|undefined;
+
+  /**
+   * View model for the headers.
+   */
+  model: object|null|undefined;
 
   /**
    * If set it renders a narrow layout
@@ -90,11 +84,6 @@ declare class ApiHeadersFormItem {
   required: boolean|null|undefined;
 
   /**
-   * True when suggestions popover is opened
-   */
-  _nameSuggestionsOpened: boolean|null|undefined;
-
-  /**
    * Prohibits rendering of the documentation (the icon and the
    * description).
    * Note, Set is separately for `api-view-model-transformer`
@@ -105,19 +94,31 @@ declare class ApiHeadersFormItem {
   /**
    * When set the editor is in read only mode.
    */
-  readonly: boolean|null|undefined;
+  readOnly: boolean|null|undefined;
+
+  /**
+   * Enables Anypoint legacy styling
+   */
+  legacy: boolean|null|undefined;
+
+  /**
+   * Enables Material Design outlined style
+   */
+  outlined: boolean|null|undefined;
+  _customTemplate(): any;
+  _modelTemplate(): any;
+  render(): any;
 
   /**
    * Toggles documentation (if available)
    */
   toggleDocs(): void;
-  _docsRendered(e: any): void;
-  _docsAnimated(): void;
 
   /**
-   * Handler for header name field focus
+   * Handler for header name field focus. It sets `_nameInput` property and
+   * requests for header names suggestions to render the autocomplete.
    */
-  _headerNameFocus(e: any): void;
+  _headerNameFocus(e: CustomEvent|null): void;
 
   /**
    * A handler called when the user selects a suggestion.
@@ -129,7 +130,14 @@ declare class ApiHeadersFormItem {
    *
    * @param e Autocomplete event
    */
-  _queryHeaderName(e: Event|null): void;
+  _headerNameHandler(e: Event|null): void;
+
+  /**
+   * Queries and sets suggestions for name.
+   *
+   * @param query The header name to query for.
+   */
+  _setNameSuggestions(query: String|null): void;
 
   /**
    * Dispatches `query-headers` custom event to retreive from the application
@@ -152,12 +160,6 @@ declare class ApiHeadersFormItem {
   _nameChanged(name: String|null): void;
 
   /**
-   * Handler for custom value focus event.
-   * Sets the `_valueInput` proeprty for value autosugession
-   */
-  _customChangeFocus(): void;
-
-  /**
    * Updates header value autocomplete if header definition contains
    * the `autocomplete` entry. It only sets the autocomplete value when
    * only one header has been found for current input.
@@ -173,15 +175,43 @@ declare class ApiHeadersFormItem {
   _updateHeaderDocs(info: object|null): void;
 
   /**
-   * A handler called when the user selects a value suggestion.
+   * Tests whether autocomplete element should be rendered.
+   *
+   * @param input Target element for autocomplete
+   * @param suggestions List of suggestions.
+   * @returns True when has the input and some suggestions.
    */
-  _onHeaderValueSelected(e: CustomEvent|null): void;
+  _renderAutocomplete(input: Element|null, suggestions: any[]|null): Boolean|null;
 
   /**
-   * Closes autocomplete for value when inpur looses focus.
+   * Handler for name field value change. Sets new name on this element.
    */
-  _closeAutocomplete(): void;
-  _renderAutocomplete(input: any, suggestions: any): any;
+  _nameValueHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for name autocomplete opened changed event.
+   * It sets opened flag so the element won't request for value suggestions while
+   * autocomplete is opened.
+   */
+  _nameSuggestOpenHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for value change from the value input
+   */
+  _valueChangeHandler(e: CustomEvent|null): void;
+
+  /**
+   * Handler for value autocomplete selection event.
+   * Validates the input as after the autocomplete updates the value programatically
+   * it won't trigger validation.
+   */
+  _valueSelectedHandler(): void;
+
+  /**
+   * If it is custom header then it focuses on the name ionput.
+   * Otherwise it focuses on API form item.
+   */
+  focus(): void;
 }
 
 declare global {
