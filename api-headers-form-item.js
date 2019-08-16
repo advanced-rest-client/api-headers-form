@@ -108,6 +108,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       readOnly,
       legacy,
       outlined,
+      noDocs,
       _nameInput,
       _nameSuggestions
     } = this;
@@ -153,7 +154,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
         </div>
       </div>
       <div class="actions">
-        ${model.hasDescription ? html`<anypoint-icon-button
+        ${!noDocs && model.hasDescription ? html`<anypoint-icon-button
           class="hint-icon"
           title="Show documentation"
           ?outlined="${outlined}"
@@ -173,7 +174,8 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       readOnly,
       required,
       legacy,
-      outlined
+      outlined,
+      noDocs
     } = this;
     const model = this.model || { schema: {} };
     return html`<div class="value-field api-field">
@@ -187,7 +189,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
         ?outlined="${outlined}"
         ?legacy="${legacy}"
         @value-changed="${this._valueChangeHandler}"></api-property-form-item>
-        ${model.hasDescription ? html`<anypoint-icon-button
+        ${model.hasDescription && !noDocs ? html`<anypoint-icon-button
           class="hint-icon"
           title="Show documentation"
           @click="${this.toggleDocs}">
@@ -202,6 +204,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       isCustom,
       docsOpened,
       legacy,
+      noDocs,
       _valueInput,
       _valueSuggestions
     } = this;
@@ -210,7 +213,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     return html`
     ${isCustom ? this._customTemplate() : this._modelTemplate()}
 
-    ${docsOpened && model.description ? html`<arc-marked .markdown="${model.description}">
+    ${!noDocs && docsOpened && model.description ? html`<arc-marked .markdown="${model.description}">
       <div slot="markdown-html" class="markdown-body"></div>
     </arc-marked>` : undefined}
 

@@ -38,6 +38,12 @@ describe('<api-headers-form-item>', function() {
     `);
   }
 
+  async function noDocsFixture() {
+    return await fixture(html `
+      <api-headers-form-item name="test-name" nodocs></api-headers-form-item>
+    `);
+  }
+
   function genModel(name) {
     name = name || 'test-name';
     return {
@@ -472,6 +478,32 @@ describe('<api-headers-form-item>', function() {
       element.focus();
 
       assert.isTrue(spy.called);
+    });
+  });
+
+  describe('No docs property', () => {
+    let element;
+    beforeEach(async function() {
+      element = await noDocsFixture();
+      element.model = genModel();
+      await nextFrame();
+    });
+
+    it('does not render description element', () => {
+      const node = element.shadowRoot.querySelector('arc-marked');
+      assert.notOk(node);
+    });
+
+    it('does not render hint toggle button', () => {
+      const node = element.shadowRoot.querySelector('.hint-icon');
+      assert.notOk(node);
+    });
+
+    it('does not render hint toggle button for custom', async () => {
+      element.isCustom = true;
+      await nextFrame();
+      const node = element.shadowRoot.querySelector('.hint-icon');
+      assert.notOk(node);
     });
   });
 
