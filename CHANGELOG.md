@@ -195,3 +195,12 @@
 
 
 
+## 3.0.1 (2019-08-16)
+
+
+### Bug Fixes
+
+* fixing dynamic initialization when DOM is not ready ([ef2549e](https://github.com/advanced-rest-client/api-headers-form/commit/ef2549e))
+
+
+
