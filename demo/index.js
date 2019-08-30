@@ -19,11 +19,11 @@ class ApiDemo extends ApiDemoPageBase {
     this.initObservableProperties([
       'headers', 'noDocs', 'amfHeaders', 'viewModel', 'narrow', 'allowDisableParams',
       'allowCustom', 'allowHideOptional', 'readOnly',
-      'demoOutlined', 'demoLegacy'
+      'demoOutlined', 'demoCompatibility'
     ]);
 
     this.componentName = 'api-headers-form';
-    this.demoStates = ['Filled', 'Outlined', 'Legacy'];
+    this.demoStates = ['Filled', 'Outlined', 'Anypoint'];
     this._viewModelChanged = this._viewModelChanged.bind(this);
     this._headersHandler = this._headersHandler.bind(this);
     this._modelHandler = this._modelHandler.bind(this);
@@ -87,15 +87,15 @@ class ApiDemo extends ApiDemoPageBase {
     switch (state) {
       case 0:
         this.demoOutlined = false;
-        this.demoLegacy = false;
+        this.demoCompatibility = false;
         break;
       case 1:
         this.demoOutlined = true;
-        this.demoLegacy = false;
+        this.demoCompatibility = false;
         break;
       case 2:
         this.demoOutlined = false;
-        this.demoLegacy = true;
+        this.demoCompatibility = true;
         break;
     }
   }
@@ -121,7 +121,7 @@ class ApiDemo extends ApiDemoPageBase {
       demoStates,
       darkThemeActive,
       demoOutlined,
-      demoLegacy
+      demoCompatibility
     } = this;
     return html`<section class="documentation-section">
       <h2>API model demo</h2>
@@ -150,7 +150,7 @@ class ApiDemo extends ApiDemoPageBase {
             ?nodocs="${noDocs}"
             ?readOnly="${readOnly}"
             ?outlined="${demoOutlined}"
-            ?legacy="${demoLegacy}"></api-headers-form>
+            ?compatibility="${demoCompatibility}"></api-headers-form>
 
           <label slot="options" id="mainOptionsLabel">Options</label>
           <anypoint-checkbox

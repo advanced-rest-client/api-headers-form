@@ -55,7 +55,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       narrow,
       noDocs,
       allowCustom,
-      legacy,
+      compatibility,
       outlined,
       optionalOpened
     } = this;
@@ -84,7 +84,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
             title="Enable or disable this header"
             ?disabled="${readOnly}"
             ?outlined="${outlined}"
-            ?legacy="${legacy}"></anypoint-checkbox>` : undefined}
+            ?compatibility="${compatibility}"></anypoint-checkbox>` : undefined}
           <api-headers-form-item
             data-index="${index}"
             .name="${item.name}"
@@ -99,7 +99,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
             ?narrow="${narrow}"
             .noDocs="${noDocs}"
             ?outlined="${outlined}"
-            ?legacy="${legacy}">
+            ?compatibility="${compatibility}">
             <anypoint-icon-button
               title="Remove this header"
               aria-label="Press to remove header ${name}"
@@ -109,7 +109,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
               slot="suffix"
               ?disabled="${readOnly}"
               ?outlined="${outlined}"
-              ?legacy="${legacy}">
+              ?compatibility="${compatibility}">
               <iron-icon icon="arc:remove-circle-outline"></iron-icon>
             </anypoint-icon-button>
           </api-headers-form-item>
@@ -157,7 +157,11 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
        */
       autoValidate: { type: Boolean },
       /**
-       * Enables Anypoint legacy styling
+       * Enables compatibility with Anypoint components.
+       */
+      compatibility: { type: Boolean },
+      /**
+       * @deprecated Use `compatibility` instead
        */
       legacy: { type: Boolean },
       /**
@@ -165,6 +169,14 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
        */
       outlined: { type: Boolean }
     };
+  }
+
+  get legacy() {
+    return this.compatibility;
+  }
+
+  set legacy(value) {
+    this.compatibility = value;
   }
 
   get value() {

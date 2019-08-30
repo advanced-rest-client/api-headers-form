@@ -106,7 +106,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       name,
       value,
       readOnly,
-      legacy,
+      compatibility,
       outlined,
       noDocs,
       _nameInput,
@@ -124,7 +124,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
             pattern="\\S*"
             ?readOnly="${readOnly}"
             ?outlined="${outlined}"
-            ?legacy="${legacy}"
+            ?compatibility="${compatibility}"
             required
             invalidmessage="Header name is not valid"
             @value-changed="${this._nameValueHandler}"
@@ -137,7 +137,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
               class="name-suggestions"
               .target="${_nameInput}"
               .source="${_nameSuggestions}"
-              ?legacy="${legacy}"
+              ?compatibility="${compatibility}"
               @selected="${this._onHeaderNameSelected}"
               @opened-changed="${this._nameSuggestOpenHandler}"></anypoint-autocomplete>` : undefined}
         </div>
@@ -149,7 +149,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
             .value="${value || ''}"
             ?readonly="${readOnly}"
             ?outlined="${outlined}"
-            ?legacy="${legacy}"
+            ?compatibility="${compatibility}"
             @value-changed="${this._valueChangeHandler}"></api-property-form-item>
         </div>
       </div>
@@ -158,7 +158,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
           class="hint-icon"
           title="Show documentation"
           ?outlined="${outlined}"
-          ?legacy="${legacy}"
+          ?compatibility="${compatibility}"
           @click="${this.toggleDocs}">
           <iron-icon icon="arc:help"></iron-icon>
         </anypoint-icon-button>` : undefined}
@@ -173,7 +173,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       value,
       readOnly,
       required,
-      legacy,
+      compatibility,
       outlined,
       noDocs
     } = this;
@@ -187,7 +187,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
         ?required="${required}"
         ?readonly="${readOnly}"
         ?outlined="${outlined}"
-        ?legacy="${legacy}"
+        ?compatibility="${compatibility}"
         @value-changed="${this._valueChangeHandler}"></api-property-form-item>
         ${model.hasDescription && !noDocs ? html`<anypoint-icon-button
           class="hint-icon"
@@ -203,7 +203,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     const {
       isCustom,
       docsOpened,
-      legacy,
+      compatibility,
       noDocs,
       _valueInput,
       _valueSuggestions
@@ -220,7 +220,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     ${hasAutocomplete ? html`<anypoint-autocomplete
       class="value-autocomplete"
       openonfocus
-      ?legacy="${legacy}"
+      ?compatibility="${compatibility}"
       @selected="${this._valueSelectedHandler}"
       verticaloffset="-10"
       .positionTarget="${_valueInput}"
@@ -285,7 +285,11 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
        */
       readOnly: { type: Boolean },
       /**
-       * Enables Anypoint legacy styling
+       * Enables compatibility with Anypoint components.
+       */
+      compatibility: { type: Boolean },
+      /**
+       * @deprecated Use `compatibility` instead
        */
       legacy: { type: Boolean },
       /**
@@ -293,6 +297,14 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
        */
       outlined: { type: Boolean }
     };
+  }
+
+  get legacy() {
+    return this.compatibility;
+  }
+
+  set legacy(value) {
+    this.compatibility = value;
   }
 
   get name() {

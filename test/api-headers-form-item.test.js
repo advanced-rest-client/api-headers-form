@@ -5,7 +5,7 @@ import {
   aTimeout,
   html
 } from '@open-wc/testing';
-import sinon from 'sinon/pkg/sinon-esm.js';
+import * as sinon from 'sinon/pkg/sinon-esm.js';
 import '@advanced-rest-client/arc-definitions/arc-definitions.js';
 import * as MockInteractions from '@polymer/iron-test-helpers/mock-interactions.js';
 import '../api-headers-form-item.js';
@@ -544,6 +544,21 @@ describe('<api-headers-form-item>', function() {
       };
       await nextFrame();
       await assert.isAccessible(element);
+    });
+  });
+
+  describe('compatibility mode', () => {
+    it('sets compatibility on item when setting legacy', async () => {
+      const element = await basicFixture();
+      element.legacy = true;
+      assert.isTrue(element.legacy, 'legacy is set');
+      assert.isTrue(element.compatibility, 'compatibility is set');
+    });
+
+    it('returns compatibility value from item when getting legacy', async () => {
+      const element = await basicFixture();
+      element.compatibility = true;
+      assert.isTrue(element.legacy, 'legacy is set');
     });
   });
 });
