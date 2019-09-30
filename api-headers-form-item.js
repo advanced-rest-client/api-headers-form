@@ -213,9 +213,10 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     return html`
     ${isCustom ? this._customTemplate() : this._modelTemplate()}
 
-    ${!noDocs && docsOpened && model.description ? html`<arc-marked .markdown="${model.description}">
+    ${!noDocs && docsOpened && model.description ?
+    html`<arc-marked .markdown="${model.description}" sanitize>
       <div slot="markdown-html" class="markdown-body"></div>
-    </arc-marked>` : undefined}
+    </arc-marked>` : ''}
 
     ${hasAutocomplete ? html`<anypoint-autocomplete
       class="value-autocomplete"
