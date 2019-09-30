@@ -42,7 +42,6 @@
     "@api-components/api-form-mixin": "^3.0.3",
     "@api-components/api-property-form-item": "^3.0.9",
     "@polymer/iron-form": "^3.0.0",
-    "@polymer/iron-icon": "^3.0.1",
     "lit-element": "^2.2.1"
   },
   "devDependencies": {
