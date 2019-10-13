@@ -10,6 +10,11 @@ The component works as a stand-alone editor that allows to define headers for HT
 
 Form headers editor provides convenient and accessible way of defining HTTP request headers for any HTTP tool.
 
+## Version compatibility
+
+This version only works with AMF model version 2 (AMF parser >= 4.0.0).
+For compatibility with previous model version use `3.x.x` version of the component.
+
 ## Usage
 
 ### Installation
@@ -132,7 +137,7 @@ This element produces common model for query parametrs, URI parameters, body, an
 The `headersModelArray` property is the value of `http://a.ml/vocabularies/http#header` shape of AMF model.
 It can be accessed via `supportedOperation` > `expects` shapes.
 
-### Development
+## Development
 
 ```sh
 git clone https://github.com/advanced-rest-client/api-headers-form
@@ -151,6 +156,6 @@ npm start
 npm test
 ```
 
-### API components
+## API components
 
 This components is a part of [API components ecosystem](https://elements.advancedrestclient.com/)

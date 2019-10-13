@@ -54,7 +54,7 @@ class ApiDemo extends ApiDemoPageBase {
     const webApi = this.helper._computeWebApi(this.amf);
     const method = this.helper._computeMethodModel(webApi, selected);
     const expects = this.helper._computeExpects(method);
-    const hKey = this.helper._getAmfKey(this.helper.ns.raml.vocabularies.http + 'header');
+    const hKey = this.helper._getAmfKey(this.helper.ns.aml.vocabularies.apiContract.header);
     const headers = this.helper._ensureArray(expects[hKey]);
     this.amfHeaders = headers;
   }
