@@ -21,7 +21,7 @@ import '@anypoint-web-components/anypoint-autocomplete/anypoint-autocomplete.js'
  * @memberOf ApiComponents
  */
 class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
-  static get styles() {
+  get styles() {
     return [
       markdownStyles,
       formStyles,
@@ -212,7 +212,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     } = this;
     const model = this.model || { schema: {} };
     const hasAutocomplete = this._renderAutocomplete(_valueInput, _valueSuggestions);
-    return html`
+    return html`<style>${this.styles}</style>
     ${isCustom ? this._customTemplate() : this._modelTemplate()}
 
     ${!noDocs && docsOpened && model.description ?
