@@ -18,7 +18,7 @@ import './api-headers-form-item.js';
  * @memberOf ApiComponents
  */
 class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
-  static get styles() {
+  get styles() {
     return [
       formStyles,
       css`:host {
@@ -66,7 +66,8 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       optionalOpened
     } = this;
     const model = this.model || [];
-    return html`<arc-definitions></arc-definitions>
+    return html`<style>${this.styles}</style>
+<arc-definitions></arc-definitions>
 
     ${renderEmptyMessage ? html`<p class="empty-info">Headers are not defined for this endpoint</p>` : undefined}
 
