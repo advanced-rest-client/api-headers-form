@@ -436,7 +436,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     selector += this.isCustom ? 'custom' : 'typed';
     selector += '"]';
     const input = this.shadowRoot.querySelector(selector);
-    return input.validate();
+    return (input && input.validate) ? input.validate() : true;
   }
   /**
    * Updates value suggestions for custom values.
