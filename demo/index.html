@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
     <title>api-headers-form demo</title>
-    <script src="../node_modules/web-animations-js/web-animations-next.min.js"></script>
     <style>
       [role="main"].centered {
         max-width: 1440px;
@@ -79,4 +78,24 @@
     <div id="demo"></div>
 
     <script type="module" src="index.js"></script>
+
+    <script>
+    document.addEventListener('WebComponentsReady', function() {
+      if (!window.ShadyCSS) {
+        return;
+      }
+      function shouldAddDocumentStyle(n) {
+        return n.nodeType === Node.ELEMENT_NODE && n.localName === 'style' && !n.hasAttribute('scope');
+      }
+      const CustomStyleInterface = window.ShadyCSS.CustomStyleInterface;
+
+      const candidates = document.querySelectorAll('style');
+      for (let i = 0; i < candidates.length; i++) {
+        const candidate = candidates[i];
+        if (shouldAddDocumentStyle(candidate)) {
+          CustomStyleInterface.addCustomStyle(candidate);
+        }
+      }
+    });
+    </script>
 </html>
