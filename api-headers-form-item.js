@@ -137,7 +137,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
               .source="${_nameSuggestions}"
               ?compatibility="${compatibility}"
               @selected="${this._onHeaderNameSelected}"
-              @opened-changed="${this._nameSuggestOpenHandler}"></anypoint-autocomplete>` : undefined}
+              @opened-changed="${this._nameSuggestOpenHandler}"></anypoint-autocomplete>` : ''}
         </div>
         <div class="value-field">
           <api-property-form-item
@@ -160,7 +160,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
           @click="${this.toggleDocs}"
         >
           <span class="icon">${help}</span>
-        </anypoint-icon-button>` : undefined}
+        </anypoint-icon-button>` : ''}
         <slot name="suffix"></slot>
       </div>
     </div>`;
@@ -196,7 +196,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
           ?compatibility="${compatibility}"
         >
           <span class="icon">${help}</span>
-        </anypoint-icon-button>` : undefined}
+        </anypoint-icon-button>` : ''}
       <slot name="suffix"></slot>
     </div>`;
   }
@@ -228,7 +228,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       verticaloffset="-10"
       .positionTarget="${_valueInput}"
       .target="${_valueInput}"
-      .source="${_valueSuggestions}"></anypoint-autocomplete>` : undefined}
+      .source="${_valueSuggestions}"></anypoint-autocomplete>` : ''}
     `;
   }
 

@@ -69,7 +69,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     return html`<style>${this.styles}</style>
 <arc-definitions></arc-definitions>
 
-    ${renderEmptyMessage ? html`<p class="empty-info">Headers are not defined for this endpoint</p>` : undefined}
+    ${renderEmptyMessage ? html`<p class="empty-info">Headers are not defined for this endpoint</p>` : ''}
 
     <iron-form>
       <form enctype="application/json">
@@ -79,7 +79,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
             .checked="${optionalOpened}"
             @checked-changed="${this._optionalHanlder}"
             title="Shows or hides optional parameters">Show optional headers</anypoint-checkbox>
-        </div>` : undefined}
+        </div>` : ''}
         ${model.map((item, index) => html`
         <div class="form-item" ?data-optional="${this.computeIsOptional(hasOptional, item)}">
           ${allowDisableParams ? html`
@@ -91,7 +91,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
             title="Enable or disable this header"
             ?disabled="${readOnly}"
             ?outlined="${outlined}"
-            ?compatibility="${compatibility}"></anypoint-checkbox>` : undefined}
+            ?compatibility="${compatibility}"></anypoint-checkbox>` : ''}
           <api-headers-form-item
             data-index="${index}"
             .name="${item.name}"
@@ -137,7 +137,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
         <span class="icon action-icon">${addCircleOutline}</span>
         Add header
       </anypoint-button>
-    </div>` : undefined}
+    </div>` : ''}
 `;
   }
 
