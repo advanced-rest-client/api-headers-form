@@ -358,6 +358,7 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    */
   toggleDocs() {
     this.docsOpened = !this.docsOpened;
+    this._gaEvent('Headers form', 'Toggle docs ' + this.docsOpened);
   }
 
   /**
@@ -578,6 +579,25 @@ class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     if (node) {
       node.focus();
     }
+  }
+
+  /**
+   * Dispatches `send-analytics` for GA event.
+   * @param {String} category
+   * @param {String} action
+   * @param {String=} label
+   */
+  _gaEvent(category, action) {
+    const e = new CustomEvent('send-analytics', {
+     bubbles: true,
+     composed: true,
+     detail: {
+       type: 'event',
+       category,
+       action,
+     }
+    });
+    this.dispatchEvent(e);
   }
 }
 

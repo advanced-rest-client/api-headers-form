@@ -81,6 +81,17 @@ describe('<api-headers-form>', function() {
       assert.isTrue(spy.args[0][0].detail.schema.isCustom);
     });
 
+    it('dispatches GA event when adding custom header', async () => {
+      const element = await customFixture();
+      const spy = sinon.spy();
+      element.addEventListener('send-analytics', spy);
+      element.add();
+      const { type, category, action } = spy.args[0][0].detail;
+      assert.equal(type, 'event', 'type is set');
+      assert.equal(category, 'Headers form', 'category is set');
+      assert.equal(action, 'Add custom', 'action is set');
+    });
+
     it('updates the value', async () => {
       const element = await basicFixture();
       element.model = [Object.assign({}, model)];
@@ -114,6 +125,28 @@ describe('<api-headers-form>', function() {
       element.invalid = true;
       element.model = [Object.assign({}, model)];
       assert.isFalse(element.invalid);
+    });
+
+    it('dispatches GA event when removing item', async () => {
+      const element = await customFixture();
+      element.model = [{
+        hasDescription: false,
+        name: 'x-1',
+        value: 't1',
+        schema: {
+          isCustom: true,
+          enabled: true
+        }
+      }];
+      await nextFrame();
+      const spy = sinon.spy();
+      element.addEventListener('send-analytics', spy);
+      const node = element.shadowRoot.querySelector('.delete-icon');
+      MockInteractions.tap(node);
+      const { type, category, action } = spy.args[0][0].detail;
+      assert.equal(type, 'event', 'type is set');
+      assert.equal(category, 'Headers form', 'category is set');
+      assert.equal(action, 'Remove custom', 'action is set');
     });
   });
 
@@ -417,6 +450,17 @@ describe('<api-headers-form>', function() {
       MockInteractions.tap(node);
       await aTimeout();
       assert.equal(element.value, 'x-1: t1');
+    });
+
+    it('dispatches GA event when changing state', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('send-analytics', spy);
+      const node = element.shadowRoot.querySelectorAll('.enable-checkbox')[2];
+      MockInteractions.tap(node);
+      const { type, category, action } = spy.args[0][0].detail;
+      assert.equal(type, 'event', 'type is set');
+      assert.equal(category, 'Headers form', 'category is set');
+      assert.equal(action, 'Toggle enabled false', 'action is set');
     });
   });
 

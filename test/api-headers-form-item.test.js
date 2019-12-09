@@ -94,6 +94,16 @@ describe('<api-headers-form-item>', function() {
       const node = element.shadowRoot.querySelector('arc-marked');
       assert.ok(node);
     });
+
+    it('dispatches GA event when docs are toggled', async () => {
+      const spy = sinon.spy();
+      element.addEventListener('send-analytics', spy);
+      element.toggleDocs();
+      const { type, category, action } = spy.args[0][0].detail;
+      assert.equal(type, 'event', 'type is set');
+      assert.equal(category, 'Headers form', 'category is set');
+      assert.equal(action, 'Toggle docs true', 'action is set');
+    });
   });
 
   describe('Required', function() {
@@ -559,6 +569,27 @@ describe('<api-headers-form-item>', function() {
       const element = await basicFixture();
       element.compatibility = true;
       assert.isTrue(element.legacy, 'legacy is set');
+    });
+  });
+
+  describe('_gaEvent()', () => {
+    const CAT = 'test-category';
+    const ACT = 'test-action';
+
+    let element;
+    beforeEach(async () => {
+      element = await basicFixture();
+    });
+
+    it('dispatches event with required arguments', () => {
+      const spy = sinon.spy();
+      element.addEventListener('send-analytics', spy);
+      element._gaEvent(CAT, ACT);
+      assert.isTrue(spy.called, 'event is dispatched');
+      const { type, category, action } = spy.args[0][0].detail;
+      assert.equal(type, 'event', 'type is set');
+      assert.equal(category, CAT, 'category is set');
+      assert.equal(action, ACT, 'action is set');
     });
   });
 });

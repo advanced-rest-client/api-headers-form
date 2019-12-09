@@ -67,7 +67,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     } = this;
     const model = this.model || [];
     return html`<style>${this.styles}</style>
-<arc-definitions></arc-definitions>
+    <arc-definitions></arc-definitions>
 
     ${renderEmptyMessage ? html`<p class="empty-info">Headers are not defined for this endpoint</p>` : ''}
 
@@ -78,7 +78,8 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
             class="toggle-checkbox"
             .checked="${optionalOpened}"
             @checked-changed="${this._optionalHanlder}"
-            title="Shows or hides optional parameters">Show optional headers</anypoint-checkbox>
+            title="Shows or hides optional parameters"
+          >Show optional headers</anypoint-checkbox>
         </div>` : ''}
         ${model.map((item, index) => html`
         <div class="form-item" ?data-optional="${this.computeIsOptional(hasOptional, item)}">
@@ -302,6 +303,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     }
     this.addCustom('header');
     setTimeout(() => this.focusLast());
+    this._gaEvent('Headers form', 'Add custom');
   }
   /**
    * Focuses on last form item.
@@ -442,9 +444,11 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     if (index !== index) {
       return;
     }
-    this.model[index].schema.enabled = e.target.checked;
+    const { checked } = e.target;
+    this.model[index].schema.enabled = checked;
     // this.model = [...this.model];
     this._updateValue(this.autoValidate);
+    this._gaEvent('Headers form', 'Toggle enabled ' + checked);
   }
 
   _nameChangeHandler(e) {
@@ -476,6 +480,12 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
 
   _optionalHanlder(e) {
     this.optionalOpened = e.detail.value;
+    this._gaEvent('Headers form', 'Toggle optional');
+  }
+
+  _removeCustom(e) {
+    super._removeCustom(e);
+    this._gaEvent('Headers form', 'Remove custom');
   }
 }
 
