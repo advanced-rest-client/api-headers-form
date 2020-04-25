@@ -303,8 +303,9 @@ describe('<api-headers-form>', function() {
         name: 'x1',
         value: '',
         required: true,
-        isCustom: false,
-        schema: {}
+        schema: {
+          isCustom: false,
+        }
       }];
       await nextFrame();
       const result = element.validate();
@@ -315,9 +316,10 @@ describe('<api-headers-form>', function() {
       element.model = [{
         name: 'x10',
         value: 'test',
-        isCustom: false,
         required: true,
-        schema: {}
+        schema: {
+          isCustom: false,
+        }
       }];
       await nextFrame();
       const result = element.validate();
@@ -334,13 +336,14 @@ describe('<api-headers-form>', function() {
     it('adds description properties to a model', async () => {
       element.model = [{
         hasDescription: false,
-        isCustom: false,
         name: 'Content-Type',
         value: 'test',
-        schema: {}
+        schema: {
+          isCustom: false,
+        }
       }];
       const item = element.model[0];
-      assert.notEmpty(item.description, 'description is set');
+      assert.isNotEmpty(item.description, 'description is set');
       assert.isTrue(item.hasDescription, 'hasDescription is set');
       assert.lengthOf(item.schema.examples, 1, 'example is set');
     });
@@ -348,10 +351,11 @@ describe('<api-headers-form>', function() {
     it('ignores unknown headers', async () => {
       element.model = [{
         hasDescription: false,
-        isCustom: false,
         name: 'x-custom',
         value: 'test',
-        schema: {}
+        schema: {
+          isCustom: false,
+        }
       }];
       const item = element.model[0];
       assert.isUndefined(item.description, 'description is not set');
@@ -363,10 +367,11 @@ describe('<api-headers-form>', function() {
       element.model = [{
         hasDescription: true,
         description: 'test',
-        isCustom: false,
         name: 'content-type',
         value: 'test',
-        schema: {}
+        schema: {
+          isCustom: false,
+        }
       }];
       const item = element.model[0];
       assert.equal(item.description, 'test', 'description is not set');
@@ -376,10 +381,11 @@ describe('<api-headers-form>', function() {
     it('ignores manually added headers', async () => {
       element.model = [{
         hasDescription: false,
-        isCustom: true,
         name: 'content-length',
         value: 'test',
-        schema: {}
+        schema: {
+          isCustom: true,
+        }
       }];
       const item = element.model[0];
       assert.isUndefined(item.description, 'description is not set');
@@ -393,27 +399,27 @@ describe('<api-headers-form>', function() {
       element = await allowDisabledFixture();
       element.model = [{
         hasDescription: false,
-        isCustom: true,
         name: 'x-1',
         value: 't1',
         schema: {
-          enabled: true
+          enabled: true,
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-2',
         value: 't2',
         schema: {
-          enabled: false
+          enabled: false,
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-3',
         value: 't3',
         schema: {
-          enabled: true
+          enabled: true,
+          isCustom: true,
         }
       }];
       await nextFrame();
@@ -474,7 +480,10 @@ describe('<api-headers-form>', function() {
 
     it('updates the model on name change', () => {
       const node = element.shadowRoot.querySelector('api-headers-form-item');
-      node.name = 'altered';
+      const input = node.shadowRoot.querySelector('anypoint-input.param-name');
+      input.dispatchEvent(new CustomEvent('value-changed', {
+        detail: { value: 'altered' }
+      }));
       assert.equal(element.model[0].name, 'altered');
     });
 
@@ -522,7 +531,10 @@ describe('<api-headers-form>', function() {
 
     it('updates the model on value change', () => {
       const node = element.shadowRoot.querySelector('api-headers-form-item');
-      node.value = 'altered';
+      const input = node.shadowRoot.querySelector('api-property-form-item');
+      input.dispatchEvent(new CustomEvent('value-changed', {
+        detail: { value: 'altered' }
+      }));
       assert.equal(element.model[0].value, 'altered');
     });
 
@@ -689,30 +701,30 @@ describe('<api-headers-form>', function() {
       element.allowdisableparams = true;
       element.model = [{
         hasDescription: true,
-        isCustom: true,
         name: 'x-1',
         value: 't1',
         schema: {
           enabled: true,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-2',
         value: 't2',
         schema: {
           enabled: false,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-3',
         value: 't3',
         schema: {
           enabled: true,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }];
       await nextFrame();
@@ -727,21 +739,21 @@ describe('<api-headers-form>', function() {
       element.readOnly = true;
       element.model = [{
         hasDescription: true,
-        isCustom: true,
         name: 'x-1',
         value: 't1',
         schema: {
           enabled: true,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-2',
         value: 't2',
         schema: {
           enabled: false,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }];
       await nextFrame();
@@ -756,23 +768,23 @@ describe('<api-headers-form>', function() {
       element.allowHideOptional = true;
       element.model = [{
         hasDescription: true,
-        isCustom: true,
         name: 'x-1',
         value: 't1',
         required: true,
         schema: {
           enabled: true,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }, {
         hasDescription: false,
-        isCustom: true,
         name: 'x-2',
         value: 't2',
         required: false,
         schema: {
           enabled: false,
-          inputLabel: 'Enter value'
+          inputLabel: 'Enter value',
+          isCustom: true,
         }
       }];
       await nextFrame();

@@ -1,6 +1,6 @@
 [![Published on NPM](https://img.shields.io/npm/v/@api-components/api-headers-form.svg)](https://www.npmjs.com/package/@api-components/api-headers-form)
 
-[![Build Status](https://travis-ci.org/advanced-rest-client/api-headers-form.svg?branch=stage)](https://travis-ci.org/advanced-rest-client/api-headers-form)
+[![Build Status](https://travis-ci.com/advanced-rest-client/api-headers-form.svg)](https://travis-ci.org/advanced-rest-client/api-headers-form)
 
 ## &lt;api-headers-form&gt;
 

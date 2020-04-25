@@ -3,7 +3,8 @@
   "description": "HTTP headers form build from AMF json/ld model",
   "version": "4.0.3",
   "license": "Apache-2.0",
-  "main": "api-headers-form.js",
+  "main": "index.js",
+  "module": "index.js",
   "keywords": [
     "web-components",
     "headers",
