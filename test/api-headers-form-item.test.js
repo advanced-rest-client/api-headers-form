@@ -534,7 +534,9 @@ describe('<api-headers-form-item>', function() {
         }
       };
       await nextFrame();
-      await assert.isAccessible(element);
+      await assert.isAccessible(element, {
+        ignoredRules: ['color-contrast']
+      });
     });
 
     it('is accessible with API model', async () => {
@@ -553,7 +555,9 @@ describe('<api-headers-form-item>', function() {
         }
       };
       await nextFrame();
-      await assert.isAccessible(element);
+      await assert.isAccessible(element, {
+        ignoredRules: ['color-contrast']
+      });
     });
   });
 

@@ -73,14 +73,6 @@ describe('<api-headers-form>', function() {
       assert.lengthOf(nodes, 0);
     });
 
-    it('dispatches api-property-model-build event', async () => {
-      const element = await customFixture();
-      const spy = sinon.spy();
-      element.addEventListener('api-property-model-build', spy);
-      element.add();
-      assert.isTrue(spy.args[0][0].detail.schema.isCustom);
-    });
-
     it('dispatches GA event when adding custom header', async () => {
       const element = await customFixture();
       const spy = sinon.spy();
@@ -724,7 +716,9 @@ describe('<api-headers-form>', function() {
         }
       }];
       await nextFrame();
-      await assert.isAccessible(element);
+      await assert.isAccessible(element, {
+        ignoredRules: ['color-contrast']
+      });
     });
 
     it('is accessible when read only', async () => {
@@ -751,7 +745,9 @@ describe('<api-headers-form>', function() {
         }
       }];
       await nextFrame();
-      await assert.isAccessible(element);
+      await assert.isAccessible(element, {
+        ignoredRules: ['color-contrast']
+      });
     });
 
     it('is accessible when has optional', async () => {
@@ -780,7 +776,9 @@ describe('<api-headers-form>', function() {
         }
       }];
       await nextFrame();
-      await assert.isAccessible(element);
+      await assert.isAccessible(element, {
+        ignoredRules: ['color-contrast']
+      });
     });
   });
 

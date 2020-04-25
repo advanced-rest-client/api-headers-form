@@ -130,7 +130,7 @@ class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     ${allowCustom ? html`<div class="add-action">
       <anypoint-button
         class="action-button"
-        @tap="${this.add}"
+        @click="${this.add}"
         title="Add new header"
         aria-label="Press to create a new header"
         ?disabled="${readOnly}"
