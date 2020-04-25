@@ -1,7 +1,7 @@
 {
   "name": "@api-components/api-headers-form",
   "description": "HTTP headers form build from AMF json/ld model",
-  "version": "4.0.3",
+  "version": "4.1.0",
   "license": "Apache-2.0",
   "main": "index.js",
   "module": "index.js",
