@@ -13,23 +13,32 @@ import styles from './ApiHeadersFormItemStyles.js';
 
 /** @typedef {import('@api-components/api-view-model-transformer/src/ApiViewModel').ModelItem} ModelItem */
 
+/* eslint-disable no-plusplus */
+/* eslint-disable class-methods-use-this */
+/* eslint-disable prefer-destructuring */
+
+/**
+ * Tests whether autocomplete element should be rendered.
+ * @param {HTMLElement} input Target element for autocomplete
+ * @param {object[]=} suggestions List of suggestions.
+ * @return {boolean} True when has the input and some suggestions.
+ */
+function renderAutocomplete(input, suggestions) {
+  return !!(input && suggestions && suggestions.length);
+}
+
 /**
  * Headers form item.
  *
  * Provides UI to enter headers data and autocomplete function for both header
  * names and values.
  *
- * @demo demo/index.html
  * @mixes ValidatableMixin
  * @extends LitElement
  */
 export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
   get styles() {
-    return [
-      markdownStyles,
-      formStyles,
-      styles,
-    ];
+    return [markdownStyles, formStyles, styles];
   }
 
   static get properties() {
@@ -98,7 +107,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       /**
        * Enables Material Design outlined style
        */
-      outlined: { type: Boolean }
+      outlined: { type: Boolean },
     };
   }
 
@@ -148,12 +157,13 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     this.outlined = false;
     this.required = false;
   }
+
   /**
    * Toggles documentation (if available)
    */
   toggleDocs() {
     this.docsOpened = !this.docsOpened;
-    this._gaEvent('Headers form', 'Toggle docs ' + this.docsOpened);
+    this._gaEvent('Headers form', `Toggle docs ${this.docsOpened}`);
   }
 
   /**
@@ -161,9 +171,11 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    * @param {string} value A value to notify
    */
   _notifyNameChange(value) {
-    this.dispatchEvent(new CustomEvent('name-changed', {
-      detail: { value }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('name-changed', {
+        detail: { value },
+      })
+    );
   }
 
   /**
@@ -171,9 +183,11 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    * @param {string} value A value to notify
    */
   _notifyValueChange(value) {
-    this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: { value }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('value-changed', {
+        detail: { value },
+      })
+    );
   }
 
   /**
@@ -185,9 +199,11 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     if (this.readOnly || this._nameInput) {
       return;
     }
-    this._nameInput = /** @type HTMLInputElement */ (e.currentTarget || e.target);
+    this._nameInput = /** @type HTMLInputElement */ (e.currentTarget ||
+      e.target);
     this._setNameSuggestions(this._nameInput.value);
   }
+
   /**
    * A handler called when the user selects a suggestion.
    * @param {CustomEvent} e
@@ -197,6 +213,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     this.name = value.value || value;
     this._notifyNameChange(this.name);
   }
+
   /**
    * Handler for autocomplete element. Query the datastore for suggestions.
    *
@@ -207,6 +224,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     const value = e.detail ? e.detail.value : target.value;
     this._setNameSuggestions(value);
   }
+
   /**
    * Queries and sets suggestions for name.
    * @param {String} query The header name to query for.
@@ -218,13 +236,14 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       this._nameSuggestionsOpened = false;
       return;
     }
-    this._nameSuggestions = suggestions.map((item) => {
+    this._nameSuggestions = suggestions.map(item => {
       return {
         value: item.key,
-        display: item.key
+        display: item.key,
       };
     });
   }
+
   /**
    * Dispatches `query-headers` custom event to retreive from the application
    * headers definition.
@@ -232,8 +251,8 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    * `api-headers-form` element contains `arc-definitions` element that
    * listens for this event.
    *
-   * @param {String} q Header name to query for
-   * @return {Array} Headers definition or empty array
+   * @param {string} q Header name to query for
+   * @return {object[]} Headers definition or empty array
    */
   _queryHeaderNameSuggestions(q) {
     const ev = new CustomEvent('query-headers', {
@@ -244,7 +263,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       },
       cancelable: true,
       bubbles: true,
-      composed: true
+      composed: true,
     });
     this.dispatchEvent(ev);
     return ev.detail.headers;
@@ -256,8 +275,9 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     selector += '"]';
     const input = this.shadowRoot.querySelector(selector);
     // @ts-ignore
-    return (input && input.validate) ? input.validate() : true;
+    return input && input.validate ? input.validate() : true;
   }
+
   /**
    * Updates value suggestions for custom values.
    *
@@ -280,12 +300,13 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       }
     });
   }
+
   /**
    * Updates header value autocomplete if header definition contains
    * the `autocomplete` entry. It only sets the autocomplete value when
    * only one header has been found for current input.
    *
-   * @param {Array<Object>} headers List of received headers from headers query
+   * @param {object[]} headers List of received headers from headers query
    */
   _updateValueAutocomplete(headers) {
     if (!headers || !headers.length) {
@@ -304,12 +325,15 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     if (header) {
       this._valueSuggestions = header.autocomplete;
       if (!this._valueInput) {
-        this._valueInput = this.shadowRoot.querySelector('api-property-form-item');
+        this._valueInput = this.shadowRoot.querySelector(
+          'api-property-form-item'
+        );
       }
     } else {
       this._valueSuggestions = undefined;
     }
   }
+
   /**
    * Updates header description if the header doesn't contain a description
    * already.
@@ -325,11 +349,12 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       return;
     }
     if (!info || info.length !== 1) {
+      // @ts-ignore
       if (model.hasDescription && model.__ownDescription) {
         this.model.description = undefined;
         this.model.hasDescription = false;
         this.model.__ownDescription = false;
-        this.model = Object.assign({}, this.model);
+        this.model = { ...this.model };
       }
       return;
     }
@@ -340,17 +365,9 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     this.model.description = info[0].desc;
     this.model.hasDescription = true;
     this.model.__ownDescription = true;
-    this.model = Object.assign({}, this.model);
+    this.model = { ...this.model };
   }
-  /**
-   * Tests whether autocomplete element should be rendered.
-   * @param {HTMLElement} input Target element for autocomplete
-   * @param {?Array} suggestions List of suggestions.
-   * @return {Boolean} True when has the input and some suggestions.
-   */
-  _renderAutocomplete(input, suggestions) {
-    return !!(input && suggestions && suggestions.length);
-  }
+
   /**
    * Handler for name field value change. Sets new name on this element.
    * @param {CustomEvent} e
@@ -360,6 +377,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     this.name = value;
     this._notifyNameChange(value);
   }
+
   /**
    * Handler for name autocomplete opened changed event.
    * It sets opened flag so the element won't request for value suggestions while
@@ -369,6 +387,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
   _nameSuggestOpenHandler(e) {
     this._nameSuggestionsOpened = e.detail.value;
   }
+
   /**
    * Handler for value change from the value input
    * @param {CustomEvent} e
@@ -378,6 +397,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     this.value = value;
     this._notifyValueChange(value);
   }
+
   /**
    * Handler for value autocomplete selection event.
    * Validates the input as after the autocomplete updates the value programatically
@@ -389,6 +409,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       this.validate();
     });
   }
+
   /**
    * If it is custom header then it focuses on the name ionput.
    * Otherwise it focuses on API form item.
@@ -412,13 +433,13 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    */
   _gaEvent(category, action) {
     const e = new CustomEvent('send-analytics', {
-     bubbles: true,
-     composed: true,
-     detail: {
-       type: 'event',
-       category,
-       action,
-     }
+      bubbles: true,
+      composed: true,
+      detail: {
+        type: 'event',
+        category,
+        action,
+      },
     });
     this.dispatchEvent(e);
   }
@@ -432,10 +453,13 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       outlined,
       noDocs,
       _nameInput,
-      _nameSuggestions
+      _nameSuggestions,
     } = this;
     const model = /** @type ModelItem */ (this.model || { schema: {} });
-    const renderNameSuggestions = this._renderAutocomplete(_nameInput, _nameSuggestions);
+    const renderNameSuggestions = renderAutocomplete(
+      _nameInput,
+      _nameSuggestions
+    );
     return html`<div class="custom-wrapper">
       <div class="form-row custom-field">
         <div class="name-field">
@@ -451,17 +475,20 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
             invalidmessage="Header name is not valid"
             @value-changed="${this._nameValueHandler}"
             @focus="${this._headerNameFocus}"
-            @input="${this._headerNameHandler}">
+            @input="${this._headerNameHandler}"
+          >
             <label slot="label">Header name</label>
           </anypoint-input>
-          ${renderNameSuggestions ? html`
-            <anypoint-autocomplete
-              class="name-suggestions"
-              .target="${_nameInput}"
-              .source="${_nameSuggestions}"
-              ?compatibility="${compatibility}"
-              @selected="${this._onHeaderNameSelected}"
-              @opened-changed="${this._nameSuggestOpenHandler}"></anypoint-autocomplete>` : ''}
+          ${renderNameSuggestions
+            ? html` <anypoint-autocomplete
+                class="name-suggestions"
+                .target="${_nameInput}"
+                .source="${_nameSuggestions}"
+                ?compatibility="${compatibility}"
+                @selected="${this._onHeaderNameSelected}"
+                @opened-changed="${this._nameSuggestOpenHandler}"
+              ></anypoint-autocomplete>`
+            : ''}
         </div>
         <div class="value-field">
           <api-property-form-item
@@ -472,19 +499,22 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
             ?readonly="${readOnly}"
             ?outlined="${outlined}"
             ?compatibility="${compatibility}"
-            @value-changed="${this._valueChangeHandler}"></api-property-form-item>
+            @value-changed="${this._valueChangeHandler}"
+          ></api-property-form-item>
         </div>
       </div>
       <div class="actions">
-        ${!noDocs && model.hasDescription ? html`<anypoint-icon-button
-          class="hint-icon"
-          title="Show documentation"
-          ?outlined="${outlined}"
-          ?compatibility="${compatibility}"
-          @click="${this.toggleDocs}"
-        >
-          <span class="icon">${help}</span>
-        </anypoint-icon-button>` : ''}
+        ${!noDocs && model.hasDescription
+          ? html`<anypoint-icon-button
+              class="hint-icon"
+              title="Show documentation"
+              ?outlined="${outlined}"
+              ?compatibility="${compatibility}"
+              @click="${this.toggleDocs}"
+            >
+              <span class="icon">${help}</span>
+            </anypoint-icon-button>`
+          : ''}
         <slot name="suffix"></slot>
       </div>
     </div>`;
@@ -498,7 +528,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       required,
       compatibility,
       outlined,
-      noDocs
+      noDocs,
     } = this;
     const model = /** @type ModelItem */ (this.model || { schema: {} });
     return html`<div class="value-field api-field">
@@ -513,14 +543,16 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
         ?compatibility="${compatibility}"
         @value-changed="${this._valueChangeHandler}"
       ></api-property-form-item>
-        ${model.hasDescription && !noDocs ? html`<anypoint-icon-button
-          class="hint-icon"
-          title="Show documentation"
-          @click="${this.toggleDocs}"
-          ?compatibility="${compatibility}"
-        >
-          <span class="icon">${help}</span>
-        </anypoint-icon-button>` : ''}
+      ${model.hasDescription && !noDocs
+        ? html`<anypoint-icon-button
+            class="hint-icon"
+            title="Show documentation"
+            @click="${this.toggleDocs}"
+            ?compatibility="${compatibility}"
+          >
+            <span class="icon">${help}</span>
+          </anypoint-icon-button>`
+        : ''}
       <slot name="suffix"></slot>
     </div>`;
   }
@@ -532,27 +564,30 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       compatibility,
       noDocs,
       _valueInput,
-      _valueSuggestions
+      _valueSuggestions,
     } = this;
     const model = /** @type ModelItem */ (this.model || { schema: {} });
-    const hasAutocomplete = this._renderAutocomplete(_valueInput, _valueSuggestions);
-    return html`<style>${this.styles}</style>
-    ${isCustom ? this._customTemplate() : this._modelTemplate()}
-
-    ${!noDocs && docsOpened && model.description ?
-    html`<arc-marked .markdown="${model.description}" sanitize>
-      <div slot="markdown-html" class="markdown-body"></div>
-    </arc-marked>` : ''}
-
-    ${hasAutocomplete ? html`<anypoint-autocomplete
-      class="value-autocomplete"
-      openonfocus
-      ?compatibility="${compatibility}"
-      @selected="${this._valueSelectedHandler}"
-      verticaloffset="-10"
-      .positionTarget="${_valueInput}"
-      .target="${_valueInput}"
-      .source="${_valueSuggestions}"></anypoint-autocomplete>` : ''}
-    `;
+    const hasAutocomplete = renderAutocomplete(_valueInput, _valueSuggestions);
+    return html`<style>
+        ${this.styles}
+      </style>
+      ${isCustom ? this._customTemplate() : this._modelTemplate()}
+      ${!noDocs && docsOpened && model.description
+        ? html`<arc-marked .markdown="${model.description}" sanitize>
+            <div slot="markdown-html" class="markdown-body"></div>
+          </arc-marked>`
+        : ''}
+      ${hasAutocomplete
+        ? html`<anypoint-autocomplete
+            class="value-autocomplete"
+            openonfocus
+            ?compatibility="${compatibility}"
+            @selected="${this._valueSelectedHandler}"
+            verticaloffset="-10"
+            .positionTarget="${_valueInput}"
+            .target="${_valueInput}"
+            .source="${_valueSuggestions}"
+          ></anypoint-autocomplete>`
+        : ''} `;
   }
 }

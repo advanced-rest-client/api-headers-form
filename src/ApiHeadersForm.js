@@ -1,30 +1,32 @@
 import { html, LitElement } from 'lit-element';
-import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
-import { ApiFormMixin } from '@api-components/api-form-mixin/api-form-mixin.js';
-import formStyles from '@api-components/api-form-mixin/api-form-styles.js';
+import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin';
+import {
+  ApiFormMixin,
+  apiFormStyles,
+  Utils,
+} from '@api-components/api-form-mixin';
 import '@polymer/iron-form/iron-form.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@anypoint-web-components/anypoint-checkbox/anypoint-checkbox.js';
-import { addCircleOutline, removeCircleOutline } from '@advanced-rest-client/arc-icons/ArcIcons.js';
+import {
+  addCircleOutline,
+  removeCircleOutline,
+} from '@advanced-rest-client/arc-icons/ArcIcons.js';
 import '@advanced-rest-client/arc-definitions/arc-definitions.js';
 import '../api-headers-form-item.js';
 import styles from './ApiHeadersFormStyles.js';
 
-/** @typedef {import('@api-components/api-view-model-transformer/src/ApiViewModel').ModelItem} ModelItem */
+/* eslint-disable no-plusplus */
+/* eslint-disable no-continue */
+/* eslint-disable prefer-destructuring */
+/* eslint-disable class-methods-use-this */
 
-/**
- * HTTP headers form build from AMF json/ld model.
- *
- * @mixes ValidatableMixin
- * @mixes ApiFormMixin
- * @extends LitElement
- */
+/** @typedef {import('@api-components/api-view-model-transformer/src/ApiViewModel').ModelItem} ModelItem */
+/** @typedef {import('./ApiHeadersFormItem').ApiHeadersFormItem} ApiHeadersFormItem */
+
 export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
   get styles() {
-    return [
-      formStyles,
-      styles,
-    ];
+    return [apiFormStyles, styles];
   }
 
   render() {
@@ -39,83 +41,99 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       allowCustom,
       compatibility,
       outlined,
-      optionalOpened
+      optionalOpened,
     } = this;
     const model = /** @type ModelItem[] */ (this.model || []);
-    return html`<style>${this.styles}</style>
-    <arc-definitions></arc-definitions>
+    return html`<style>
+        ${this.styles}
+      </style>
+      <arc-definitions></arc-definitions>
 
-    ${renderEmptyMessage ? html`<p class="empty-info">Headers are not defined for this endpoint</p>` : ''}
+      ${renderEmptyMessage
+        ? html`<p class="empty-info">
+            Headers are not defined for this endpoint
+          </p>`
+        : ''}
 
-    <iron-form>
-      <form enctype="application/json">
-        ${renderOptionalCheckbox ? html`<div class="optional-checkbox">
-          <anypoint-checkbox
-            class="toggle-checkbox"
-            .checked="${optionalOpened}"
-            @checked-changed="${this._optionalHanlder}"
-            title="Shows or hides optional parameters"
-          >Show optional headers</anypoint-checkbox>
-        </div>` : ''}
-        ${model.map((item, index) => html`
-        <div class="form-item" ?data-optional="${this.computeIsOptional(hasOptional, item)}">
-          ${allowDisableParams ? html`
-          <anypoint-checkbox
-            class="enable-checkbox"
-            ?checked="${item.schema.enabled}"
-            data-index="${index}"
-            @checked-changed="${this._enableCheckedHandler}"
-            title="Enable or disable this header"
-            ?disabled="${readOnly}"
-            ?outlined="${outlined}"
-            ?compatibility="${compatibility}"></anypoint-checkbox>` : ''}
-          <api-headers-form-item
-            data-index="${index}"
-            .name="${item.name}"
-            @name-changed="${this._nameChangeHandler}"
-            .value="${item.value}"
-            @value-changed="${this._valueChangeHandler}"
-            .model="${item}"
-            ?required="${item.required}"
-            .readOnly="${readOnly}"
-            .isCustom="${item.schema.isCustom}"
-            .isArray="${item.schema.isArray}"
-            ?narrow="${narrow}"
-            .noDocs="${noDocs}"
-            ?outlined="${outlined}"
-            ?compatibility="${compatibility}"
-          >
-            <anypoint-icon-button
-              title="Remove this header"
-              aria-label="Press to remove header ${name}"
-              class="action-icon delete-icon"
-              data-index="${index}"
-              @click="${this._removeCustom}"
-              slot="suffix"
-              ?disabled="${readOnly}"
-              ?outlined="${outlined}"
-              ?compatibility="${compatibility}"
+      <iron-form>
+        <form enctype="application/json">
+          ${renderOptionalCheckbox
+            ? html`<div class="optional-checkbox">
+                <anypoint-checkbox
+                  class="toggle-checkbox"
+                  .checked="${optionalOpened}"
+                  @checked-changed="${this._optionalHanlder}"
+                  title="Shows or hides optional parameters"
+                  >Show optional headers</anypoint-checkbox
+                >
+              </div>`
+            : ''}
+          ${model.map(
+            (item, index) => html` <div
+              class="form-item"
+              ?data-optional="${Utils.isOptional(hasOptional, item)}"
             >
-              <span class="icon action-icon">${removeCircleOutline}</span>
-            </anypoint-icon-button>
-          </api-headers-form-item>
-        </div>`)}
-      </form>
-    </iron-form>
+              ${allowDisableParams
+                ? html` <anypoint-checkbox
+                    class="enable-checkbox"
+                    ?checked="${item.schema.enabled}"
+                    data-index="${index}"
+                    @checked-changed="${this._enableCheckedHandler}"
+                    title="Enable or disable this header"
+                    ?disabled="${readOnly}"
+                    ?outlined="${outlined}"
+                    ?compatibility="${compatibility}"
+                  ></anypoint-checkbox>`
+                : ''}
+              <api-headers-form-item
+                data-index="${index}"
+                .name="${item.name}"
+                @name-changed="${this._nameChangeHandler}"
+                .value="${item.value}"
+                @value-changed="${this._valueChangeHandler}"
+                .model="${item}"
+                ?required="${item.required}"
+                .readOnly="${readOnly}"
+                .isCustom="${item.schema.isCustom}"
+                .isArray="${item.schema.isArray}"
+                ?narrow="${narrow}"
+                .noDocs="${noDocs}"
+                ?outlined="${outlined}"
+                ?compatibility="${compatibility}"
+              >
+                <anypoint-icon-button
+                  title="Remove this header"
+                  aria-label="Press to remove header ${item.name}"
+                  class="action-icon delete-icon"
+                  data-index="${index}"
+                  @click="${this._removeCustom}"
+                  slot="suffix"
+                  ?disabled="${readOnly}"
+                  ?outlined="${outlined}"
+                  ?compatibility="${compatibility}"
+                >
+                  <span class="icon action-icon">${removeCircleOutline}</span>
+                </anypoint-icon-button>
+              </api-headers-form-item>
+            </div>`
+          )}
+        </form>
+      </iron-form>
 
-    ${allowCustom ? html`<div class="add-action">
-      <anypoint-button
-        class="action-button"
-        @click="${this.add}"
-        title="Add new header"
-        aria-label="Press to create a new header"
-        ?disabled="${readOnly}"
-      >
-        <span class="icon action-icon">${addCircleOutline}</span>
-        Add header
-      </anypoint-button>
-    </div>` : ''}
-`;
+      ${allowCustom
+        ? html`<div class="add-action">
+            <anypoint-button
+              class="action-button"
+              @click="${this.add}"
+              title="Add new header"
+              aria-label="Press to create a new header"
+              ?disabled="${readOnly}"
+            >
+              <span class="icon action-icon">${addCircleOutline}</span>
+              Add header
+            </anypoint-button>
+          </div>`
+        : ''} `;
   }
 
   static get properties() {
@@ -151,7 +169,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       /**
        * Enables Material Design outlined style
        */
-      outlined: { type: Boolean }
+      outlined: { type: Boolean },
     };
   }
 
@@ -174,11 +192,13 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       return;
     }
     this._value = value;
-    this.dispatchEvent(new CustomEvent('value-changed', {
-      detail: {
-        value
-      }
-    }));
+    this.dispatchEvent(
+      new CustomEvent('value-changed', {
+        detail: {
+          value,
+        },
+      })
+    );
   }
 
   get model() {
@@ -210,38 +230,51 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     this.requestUpdate('readOnly', old);
     this._modelChanged(this.model, value);
   }
+
   /**
-   * @return {Function} Previously registered handler for `value-changed` event
+   * @return {EventListener} Previously registered handler for `value-changed` event
    */
   get onvalue() {
     return this['_onvalue-changed'];
   }
+
   /**
    * Registers a callback function for `value-changed` event
-   * @param {Function} value A callback to register. Pass `null` or `undefined`
+   * @param {EventListener} value A callback to register. Pass `null` or `undefined`
    * to clear the listener.
    */
   set onvalue(value) {
     this._registerCallback('value-changed', value);
   }
+
   /**
-   * @return {Function} Previously registered handler for `model-changed` event
+   * @return {EventListener} Previously registered handler for `model-changed` event
    */
   get onmodel() {
     return this['_onmodel-changed'];
   }
+
   /**
    * Registers a callback function for `model-changed` event
-   * @param {Function} value A callback to register. Pass `null` or `undefined`
+   * @param {EventListener} value A callback to register. Pass `null` or `undefined`
    * to clear the listener.
    */
   set onmodel(value) {
     this._registerCallback('model-changed', value);
   }
+
+  constructor() {
+    super();
+    this.noDocs = false;
+    this.outlined = false;
+    this.autoValidate = false;
+    this._model = undefined;
+  }
+
   /**
    * Registers an event handler for given type
    * @param {String} eventType Event type (name)
-   * @param {Function} value The handler to register
+   * @param {EventListener} value The handler to register
    */
   _registerCallback(eventType, value) {
     const key = `_on${eventType}`;
@@ -260,6 +293,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     this.__firstUpdatedReady = this;
     this._autoDescribeModel(this.model);
   }
+
   /**
    * Appends an empty header to the list.
    */
@@ -271,11 +305,14 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     setTimeout(() => this.focusLast());
     this._gaEvent('Headers form', 'Add custom');
   }
+
   /**
    * Focuses on last form item.
    */
   focusLast() {
-    const node = this.shadowRoot.querySelector('.form-item:last-child api-headers-form-item');
+    const node = /** @type ApiHeadersFormItem */ (this.shadowRoot.querySelector(
+      '.form-item:last-child api-headers-form-item'
+    ));
     if (!node) {
       return;
     }
@@ -294,6 +331,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       this._autoDescribeModel(model);
     }
   }
+
   /**
    * Updates value of the element when model change.
    * @param {Boolean} validate When true then it performs validation after setting
@@ -309,6 +347,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       this.__updatingModelValue = false;
     });
   }
+
   /**
    * Creates a header value for current model.
    * @param {Boolean} validate When true then it performs validation after setting
@@ -343,17 +382,18 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       if (value[0]) {
         value += '\n';
       }
-      value += n + ': ' + v;
+      value += `${n}: ${v}`;
     }
     this.value = value;
     if (validate) {
-      this.validate();
+      this.validate(this.value);
     }
   }
+
   /**
    * Adds documentation for headers that doesn't have it already.
    *
-   * @param {Array<ModelItem>} model View model
+   * @param {ModelItem[]} model View model
    */
   _autoDescribeModel(model) {
     if (this.noDocs || !model) {
@@ -361,6 +401,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     }
     model.forEach((item, index) => this._fillModelDescription(item, index));
   }
+
   /**
    * Queries for header information and updates header info if needed.
    *
@@ -381,6 +422,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     model[index].schema.examples = [type.example];
     this.model = [...model];
   }
+
   /**
    * Queries for a header definition.
    *
@@ -390,14 +432,15 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
   _queryHeaderData(name) {
     const node = this.shadowRoot.querySelector('arc-definitions');
     if (!node) {
-      return;
+      return undefined;
     }
+    // @ts-ignore
     const suggestions = node.queryHeaders(name, 'request');
     if (!suggestions) {
-      return;
+      return undefined;
     }
-    name = name.toLowerCase();
-    return suggestions.find((i) => i.key.toLowerCase() === name);
+    const lowerName = name.toLowerCase();
+    return suggestions.find(i => i.key.toLowerCase() === lowerName);
   }
 
   _getValidity() {
@@ -407,14 +450,13 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
 
   _enableCheckedHandler(e) {
     const index = Number(e.target.dataset.index);
-    if (index !== index) {
+    if (Number.isNaN(index)) {
       return;
     }
     const { checked } = e.target;
     this.model[index].schema.enabled = checked;
-    // this.model = [...this.model];
     this._updateValue(this.autoValidate);
-    this._gaEvent('Headers form', 'Toggle enabled ' + checked);
+    this._gaEvent('Headers form', `Toggle enabled ${checked}`);
   }
 
   _nameChangeHandler(e) {
@@ -422,25 +464,24 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       return;
     }
     const index = Number(e.target.dataset.index);
-    if (index !== index) {
+    if (Number.isNaN(index)) {
       return;
     }
-    const item = this.model[index];
+    const item = /** @type ModelItem */ (this.model[index]);
     if (!item.schema.isCustom) {
       return;
     }
-    this.model[index].name = e.detail.value;
-    // this.model = [...this.model];
+    item.name = e.detail.value;
     this._updateValue(this.autoValidate);
   }
 
   _valueChangeHandler(e) {
     const index = Number(e.target.dataset.index);
-    if (index !== index) {
+    if (Number.isNaN(index)) {
       return;
     }
-    this.model[index].value = e.detail.value;
-    // this.model = [...this.model];
+    const item = /** @type ModelItem */ (this.model[index]);
+    item.value = e.detail.value;
     this._updateValue(this.autoValidate);
   }
 
