@@ -1,0 +1,38 @@
+#%RAML 1.0
+title: APIC-356
+
+traits:
+  searchParams:
+    headers:
+      accountId?:
+        minLength: 3
+        default: "001"
+      accountName?:
+        minLength: 3
+        default: roe
+      customerId?:
+        minLength: 3
+        default: "123"
+      countryCode?:
+        minLength: 3
+        maxLength: 3
+        default: USA
+      modifiedAfter?:
+        displayName: Only those modified after this date
+        minLength: 23
+        maxLength: 29
+        example: 2018-04-28T14:00:00.000Z
+        default: 2019-12-01T14:00:00.000Z
+      modifiedBefore?:
+        displayName: Only those modified before this date
+        minLength: 23
+        maxLength: 29
+        example: 2018-05-28T14:00:00.000Z
+        default: 2019-12-31T14:11:59.999Z
+
+
+/accounts:
+  get:
+    is: searchParams
+  /{id}:
+    get:

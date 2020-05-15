@@ -11,9 +11,14 @@ class ApiDemo extends ApiDemoPage {
     this.viewModelTransformer = new ApiViewModel();
 
     this.initObservableProperties([
-      'headers', 'amfHeaders', 'viewModel', 'allowDisableParams',
-      'allowCustom', 'allowHideOptional', 'readOnly',
-      'outlined'
+      'headers',
+      'amfHeaders',
+      'viewModel',
+      'allowDisableParams',
+      'allowCustom',
+      'allowHideOptional',
+      'readOnly',
+      'outlined',
     ]);
 
     this.componentName = 'api-headers-form';
@@ -37,7 +42,7 @@ class ApiDemo extends ApiDemoPage {
         this.render();
       },
       enumerable: true,
-      configurable: true
+      configurable: true,
     });
   }
 
@@ -49,7 +54,9 @@ class ApiDemo extends ApiDemoPage {
     this._noDocs = value;
     this.viewModelTransformer.noDocs = value;
     if (this.amfHeaders) {
-      this.viewModel = this.viewModelTransformer.computeViewModel(this.amfHeaders);
+      this.viewModel = this.viewModelTransformer.computeViewModel(
+        this.amfHeaders
+      );
     }
   }
 
@@ -122,10 +129,9 @@ class ApiDemo extends ApiDemoPage {
       demoStates,
       darkThemeActive,
       outlined,
-      compatibility
+      compatibility,
     } = this;
-    return html`
-    <section class="documentation-section">
+    return html` <section class="documentation-section">
       <h3>Interactive demo</h3>
       <p>
         This demo lets you preview the API Request Editor element with various
@@ -149,7 +155,8 @@ class ApiDemo extends ApiDemoPage {
           ?nodocs="${noDocs}"
           ?readOnly="${readOnly}"
           ?outlined="${outlined}"
-          ?compatibility="${compatibility}"></api-headers-form>
+          ?compatibility="${compatibility}"
+        ></api-headers-form>
 
         <label slot="options" id="mainOptionsLabel">Options</label>
         <anypoint-checkbox
@@ -201,8 +208,7 @@ class ApiDemo extends ApiDemoPage {
   }
 
   _standaloneTemplate() {
-    return html`
-    <section class="documentation-section">
+    return html` <section class="documentation-section">
       <h3>Standalone editor</h3>
       <p>
         The headers editor can be used without providing the data model.
@@ -212,15 +218,29 @@ class ApiDemo extends ApiDemoPage {
         slot="content"
         allowdisableparams
         allowcustom
-        allowhideoptional></api-headers-form>
+        allowhideoptional
+      ></api-headers-form>
     </section>`;
+  }
+
+  _apiListTemplate() {
+    return [
+      ['demo-api', 'Demo API'],
+      ['APIC-410', 'APIC-410'],
+    ].map(
+      ([file, label]) => html`
+        <anypoint-item data-src="${file}-compact.json"
+          >${label} - compact model</anypoint-item
+        >
+        <anypoint-item data-src="${file}.json">${label}</anypoint-item>
+      `
+    );
   }
 
   contentTemplate() {
     return html`
-    <h2 class="centered main">API headers form</h2>
-    ${this._demoTemplate()}
-    ${this._standaloneTemplate()}
+      <h2 class="centered main">API headers form</h2>
+      ${this._demoTemplate()} ${this._standaloneTemplate()}
     `;
   }
 }
