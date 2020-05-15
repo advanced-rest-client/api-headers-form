@@ -1,10 +1,6 @@
 import { html, LitElement } from 'lit-element';
 import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin';
-import {
-  ApiFormMixin,
-  apiFormStyles,
-  Utils,
-} from '@api-components/api-form-mixin';
+import { queryRequestHeaders } from '@advanced-rest-client/arc-definitions';
 import '@polymer/iron-form/iron-form.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@anypoint-web-components/anypoint-checkbox/anypoint-checkbox.js';
@@ -12,7 +8,11 @@ import {
   addCircleOutline,
   removeCircleOutline,
 } from '@advanced-rest-client/arc-icons/ArcIcons.js';
-import '@advanced-rest-client/arc-definitions/arc-definitions.js';
+import {
+  ApiFormMixin,
+  apiFormStyles,
+  Utils,
+} from '@api-components/api-form-mixin';
 import '../api-headers-form-item.js';
 import styles from './ApiHeadersFormStyles.js';
 
@@ -47,7 +47,6 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
     return html`<style>
         ${this.styles}
       </style>
-      <arc-definitions></arc-definitions>
 
       ${renderEmptyMessage
         ? html`<p class="empty-info">
@@ -430,12 +429,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
    * @return {Object|undefined} Header definition or undefined.
    */
   _queryHeaderData(name) {
-    const node = this.shadowRoot.querySelector('arc-definitions');
-    if (!node) {
-      return undefined;
-    }
-    // @ts-ignore
-    const suggestions = node.queryHeaders(name, 'request');
+    const suggestions = queryRequestHeaders(name);
     if (!suggestions) {
       return undefined;
     }

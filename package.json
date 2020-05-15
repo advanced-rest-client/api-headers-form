@@ -29,7 +29,7 @@
     "email": "arc@mulesoft.com"
   },
   "dependencies": {
-    "@advanced-rest-client/arc-definitions": "^3.0.0",
+    "@advanced-rest-client/arc-definitions": "^3.1.0",
     "@advanced-rest-client/arc-icons": "^3.1.0",
     "@advanced-rest-client/arc-marked": "^1.0.6",
     "@advanced-rest-client/markdown-styles": "^3.1.2",
@@ -53,10 +53,10 @@
     "@api-components/api-view-model-transformer": "^4.1.1",
     "@open-wc/eslint-config": "^2.0.0",
     "@open-wc/testing": "^2.5.16",
-    "@open-wc/testing-karma": "^3.3.23",
+    "@open-wc/testing-karma": "^3.3.24",
     "@polymer/iron-test-helpers": "^3.0.1",
     "deepmerge": "^4.2.2",
-    "es-dev-server": "^1.50.1",
+    "es-dev-server": "^1.50.2",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
     "husky": "^4.2.5",
