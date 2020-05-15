@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+
 module.exports = {
   watch: true,
   open: true,
@@ -10,7 +12,8 @@ module.exports = {
         const rewritten = body.replace('(this || (', '(window || (');
         return { body: rewritten };
       }
+      return undefined;
     },
   ],
-  compatibility: 'auto'
+  compatibility: 'auto',
 };

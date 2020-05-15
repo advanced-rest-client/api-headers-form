@@ -23,116 +23,11 @@ import styles from './ApiHeadersFormStyles.js';
 
 /** @typedef {import('@api-components/api-view-model-transformer/src/ApiViewModel').ModelItem} ModelItem */
 /** @typedef {import('./ApiHeadersFormItem').ApiHeadersFormItem} ApiHeadersFormItem */
+/** @typedef {import('lit-element').TemplateResult} TemplateResult */
 
 export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
   get styles() {
     return [apiFormStyles, styles];
-  }
-
-  render() {
-    const {
-      renderEmptyMessage,
-      renderOptionalCheckbox,
-      allowDisableParams,
-      readOnly,
-      hasOptional,
-      narrow,
-      noDocs,
-      allowCustom,
-      compatibility,
-      outlined,
-      optionalOpened,
-    } = this;
-    const model = /** @type ModelItem[] */ (this.model || []);
-    return html`<style>
-        ${this.styles}
-      </style>
-
-      ${renderEmptyMessage
-        ? html`<p class="empty-info">
-            Headers are not defined for this endpoint
-          </p>`
-        : ''}
-
-      <iron-form>
-        <form enctype="application/json">
-          ${renderOptionalCheckbox
-            ? html`<div class="optional-checkbox">
-                <anypoint-checkbox
-                  class="toggle-checkbox"
-                  .checked="${optionalOpened}"
-                  @checked-changed="${this._optionalHanlder}"
-                  title="Shows or hides optional parameters"
-                  >Show optional headers</anypoint-checkbox
-                >
-              </div>`
-            : ''}
-          ${model.map(
-            (item, index) => html` <div
-              class="form-item"
-              ?data-optional="${Utils.isOptional(hasOptional, item)}"
-            >
-              ${allowDisableParams
-                ? html` <anypoint-checkbox
-                    class="enable-checkbox"
-                    ?checked="${item.schema.enabled}"
-                    data-index="${index}"
-                    @checked-changed="${this._enableCheckedHandler}"
-                    title="Enable or disable this header"
-                    ?disabled="${readOnly}"
-                    ?outlined="${outlined}"
-                    ?compatibility="${compatibility}"
-                  ></anypoint-checkbox>`
-                : ''}
-              <api-headers-form-item
-                data-index="${index}"
-                .name="${item.name}"
-                @name-changed="${this._nameChangeHandler}"
-                .value="${item.value}"
-                @value-changed="${this._valueChangeHandler}"
-                .model="${item}"
-                ?required="${item.required}"
-                .readOnly="${readOnly}"
-                .isCustom="${item.schema.isCustom}"
-                .isArray="${item.schema.isArray}"
-                ?narrow="${narrow}"
-                .noDocs="${noDocs}"
-                ?outlined="${outlined}"
-                ?compatibility="${compatibility}"
-              >
-                <anypoint-icon-button
-                  title="Remove this header"
-                  aria-label="Press to remove header ${item.name}"
-                  class="action-icon delete-icon"
-                  data-index="${index}"
-                  @click="${this._removeCustom}"
-                  slot="suffix"
-                  ?disabled="${readOnly}"
-                  ?outlined="${outlined}"
-                  ?compatibility="${compatibility}"
-                >
-                  <span class="icon action-icon">${removeCircleOutline}</span>
-                </anypoint-icon-button>
-              </api-headers-form-item>
-            </div>`
-          )}
-        </form>
-      </iron-form>
-
-      ${allowCustom
-        ? html`<div class="add-action">
-            <anypoint-button
-              class="action-button"
-              @click="${this.add}"
-              title="Add new header"
-              aria-label="Press to create a new header"
-              ?disabled="${readOnly}"
-            >
-              <span class="icon action-icon">${addCircleOutline}</span>
-              Add header
-            </anypoint-button>
-          </div>`
-        : ''} `;
   }
 
   static get properties() {
@@ -434,7 +329,7 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
       return undefined;
     }
     const lowerName = name.toLowerCase();
-    return suggestions.find(i => i.key.toLowerCase() === lowerName);
+    return suggestions.find((i) => i.key.toLowerCase() === lowerName);
   }
 
   _getValidity() {
@@ -487,5 +382,162 @@ export class ApiHeadersForm extends ValidatableMixin(ApiFormMixin(LitElement)) {
   _removeCustom(e) {
     super._removeCustom(e);
     this._gaEvent('Headers form', 'Remove custom');
+  }
+
+  /**
+   * @return {TemplateResult} Template for the element
+   */
+  render() {
+    const model = /** @type ModelItem[] */ (this.model || []);
+    return html` <style>
+        ${this.styles}
+      </style>
+      ${this._emptyMessageTemplate()}
+      <iron-form>
+        <form enctype="application/json">
+          ${this._optionaToggleTemplate()}
+          ${model.map((item, index) => this._formItemTemplate(item, index))}
+        </form>
+      </iron-form>
+      ${this._addCustomTemplate()}`;
+  }
+
+  /**
+   * @return {TemplateResult|string} Template for the empty message
+   */
+  _emptyMessageTemplate() {
+    if (!this.renderEmptyMessage) {
+      return '';
+    }
+    return html`<p class="empty-info">
+      Headers are not defined for this endpoint
+    </p>`;
+  }
+
+  /**
+   * @return {TemplateResult|string} Template for the toggle optional switch
+   */
+  _optionaToggleTemplate() {
+    if (!this.renderOptionalCheckbox) {
+      return '';
+    }
+    return html` <div class="optional-checkbox">
+      <anypoint-checkbox
+        class="toggle-checkbox"
+        .checked="${this.optionalOpened}"
+        @checked-changed="${this._optionalHanlder}"
+        title="Shows or hides optional parameters"
+        >Show optional headers</anypoint-checkbox
+      >
+    </div>`;
+  }
+
+  /**
+   * @return {TemplateResult|string} Template for the add header button
+   */
+  _addCustomTemplate() {
+    if (!this.allowCustom) {
+      return '';
+    }
+    return html` <div class="add-action">
+      <anypoint-button
+        class="action-button"
+        @click="${this.add}"
+        title="Add new header"
+        aria-label="Press to create a new header"
+        ?disabled="${this.readOnly}"
+      >
+        <span class="icon action-icon">${addCircleOutline}</span>
+        Add header
+      </anypoint-button>
+    </div>`;
+  }
+
+  /**
+   * @param {ModelItem} item An item definition to render
+   * @param {Number} index An item's index in the model array
+   * @return {TemplateResult} Template for a form list item.
+   */
+  _formItemTemplate(item, index) {
+    const { hasOptional } = this;
+    return html`<div
+      class="form-item"
+      ?data-optional="${Utils.isOptional(hasOptional, item)}"
+    >
+      ${this._itemDisableTemplate(item, index)}
+      ${this._headersFormItemTemplate(item, index)}
+    </div>`;
+  }
+
+  /**
+   * @param {ModelItem} item An item definition to render
+   * @param {Number} index An item's index in the model array
+   * @return {TemplateResult|string} Template for a item toggle switch
+   */
+  _itemDisableTemplate(item, index) {
+    if (!this.allowDisableParams) {
+      return '';
+    }
+    return html` <anypoint-checkbox
+      class="enable-checkbox"
+      ?checked="${item.schema.enabled}"
+      data-index="${index}"
+      @checked-changed="${this._enableCheckedHandler}"
+      title="Enable or disable this header"
+      ?disabled="${this.readOnly}"
+      ?outlined="${this.outlined}"
+      ?compatibility="${this.compatibility}"
+    ></anypoint-checkbox>`;
+  }
+
+  /**
+   * @param {ModelItem} item An item definition to render
+   * @param {Number} index An item's index in the model array
+   * @return {TemplateResult} Template for a remove item icon button
+   */
+  _itemRemoveIconTemplate(item, index) {
+    return html`
+      <anypoint-icon-button
+        title="Remove this header"
+        aria-label="Press to remove header ${item.name}"
+        class="action-icon delete-icon"
+        data-index="${index}"
+        @click="${this._removeCustom}"
+        slot="suffix"
+        ?disabled="${this.readOnly}"
+        ?outlined="${this.outlined}"
+        ?compatibility="${this.compatibility}"
+      >
+        <span class="icon action-icon">${removeCircleOutline}</span>
+      </anypoint-icon-button>
+    `;
+  }
+
+  /**
+   * @param {ModelItem} item An item definition to render
+   * @param {Number} index An item's index in the model array
+   * @return {TemplateResult} Template for a api-headers-form-item element
+   */
+  _headersFormItemTemplate(item, index) {
+    return html`
+      <api-headers-form-item
+        data-index="${index}"
+        .name="${item.name}"
+        @name-changed="${this._nameChangeHandler}"
+        .value="${item.value}"
+        @value-changed="${this._valueChangeHandler}"
+        .model="${item}"
+        ?required="${item.required}"
+        .readOnly="${this.readOnly}"
+        .isCustom="${item.schema.isCustom}"
+        .isArray="${item.schema.isArray}"
+        ?narrow="${this.narrow}"
+        .noDocs="${this.noDocs}"
+        ?outlined="${this.outlined}"
+        ?compatibility="${this.compatibility}"
+      >
+        ${this._itemRemoveIconTemplate(item, index)}
+      </api-headers-form-item>
+    `;
   }
 }

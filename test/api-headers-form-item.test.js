@@ -1,36 +1,37 @@
-import {
-  fixture,
-  assert,
-  nextFrame,
-  aTimeout,
-  html
-} from '@open-wc/testing';
-import * as sinon from 'sinon/pkg/sinon-esm.js';
+import { fixture, assert, nextFrame, aTimeout, html } from '@open-wc/testing';
+import * as sinon from 'sinon';
 import '@advanced-rest-client/arc-definitions/arc-definitions.js';
 import * as MockInteractions from '@polymer/iron-test-helpers/mock-interactions.js';
 import '../api-headers-form-item.js';
 
-describe('<api-headers-form-item>', function() {
+describe('<api-headers-form-item>', () => {
   async function basicFixture() {
-    return await fixture(html `
-      <api-headers-form-item name="test-name" value="test-value"></api-headers-form-item>
+    return fixture(html`
+      <api-headers-form-item
+        name="test-name"
+        value="test-value"
+      ></api-headers-form-item>
     `);
   }
 
   async function requiredFixture() {
-    return await fixture(html `
+    return fixture(html`
       <api-headers-form-item name="test-name" required></api-headers-form-item>
     `);
   }
 
   async function customFixture() {
-    return await fixture(html `
-      <api-headers-form-item name="test-name" value="test-value" iscustom></api-headers-form-item>
+    return fixture(html`
+      <api-headers-form-item
+        name="test-name"
+        value="test-value"
+        iscustom
+      ></api-headers-form-item>
     `);
   }
 
   async function definitionsFixture() {
-    return await fixture(html `
+    return fixture(html`
       <div>
         <arc-definitions></arc-definitions>
         <api-headers-form-item iscustom></api-headers-form-item>
@@ -39,13 +40,12 @@ describe('<api-headers-form-item>', function() {
   }
 
   async function noDocsFixture() {
-    return await fixture(html `
+    return fixture(html`
       <api-headers-form-item name="test-name" nodocs></api-headers-form-item>
     `);
   }
 
-  function genModel(name) {
-    name = name || 'test-name';
+  function genModel(name = 'test-name') {
     return {
       binding: 'header',
       name,
@@ -59,15 +59,15 @@ describe('<api-headers-form-item>', function() {
         isEnum: false,
         isArray: false,
         isBool: false,
-        inputType: 'text'
+        inputType: 'text',
       },
-      value: 'test-value'
+      value: 'test-value',
     };
   }
 
-  describe('Basic tests', function() {
+  describe('Basic tests', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.model = genModel();
       await nextFrame();
@@ -106,9 +106,9 @@ describe('<api-headers-form-item>', function() {
     });
   });
 
-  describe('Required', function() {
+  describe('Required', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await requiredFixture();
       const m = genModel();
       m.value = '';
@@ -129,7 +129,7 @@ describe('<api-headers-form-item>', function() {
 
   describe('Custom value', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await customFixture();
       element.model = genModel();
       await nextFrame();
@@ -146,14 +146,16 @@ describe('<api-headers-form-item>', function() {
     });
 
     it('Renders value input', () => {
-      const node = element.shadowRoot.querySelector('.custom-wrapper api-property-form-item');
+      const node = element.shadowRoot.querySelector(
+        '.custom-wrapper api-property-form-item'
+      );
       assert.ok(node);
     });
   });
 
   describe('_updateHeaderDocs()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await customFixture();
       element.model = genModel();
       await nextFrame();
@@ -181,7 +183,7 @@ describe('<api-headers-form-item>', function() {
       assert.isUndefined(element.model.description);
     });
 
-    it('Won\'t clear the description when no __ownDescription flag', () => {
+    it("Won't clear the description when no __ownDescription flag", () => {
       element._updateHeaderDocs([]);
 
       assert.isTrue(element.model.hasDescription);
@@ -190,9 +192,11 @@ describe('<api-headers-form-item>', function() {
 
     it('Updates description from suggestions', () => {
       element.model.hasDescription = false;
-      element._updateHeaderDocs([{
-        desc: 'updated-desc'
-      }]);
+      element._updateHeaderDocs([
+        {
+          desc: 'updated-desc',
+        },
+      ]);
 
       assert.isTrue(element.model.hasDescription);
       assert.equal(element.model.description, 'updated-desc');
@@ -200,9 +204,11 @@ describe('<api-headers-form-item>', function() {
 
     it('Sets __ownDescription flag', () => {
       element.model.hasDescription = false;
-      element._updateHeaderDocs([{
-        desc: 'updated-desc'
-      }]);
+      element._updateHeaderDocs([
+        {
+          desc: 'updated-desc',
+        },
+      ]);
 
       assert.isTrue(element.model.__ownDescription);
     });
@@ -210,7 +216,7 @@ describe('<api-headers-form-item>', function() {
 
   describe('_headerNameFocus()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.model = genModel();
       await nextFrame();
@@ -219,7 +225,7 @@ describe('<api-headers-form-item>', function() {
     it('Does nothing when readonly', () => {
       element.readOnly = true;
       element._headerNameFocus({
-        target: 'test'
+        target: 'test',
       });
       assert.isUndefined(element._nameInput);
     });
@@ -227,21 +233,21 @@ describe('<api-headers-form-item>', function() {
     it('Does nothing when _nameInput is set', () => {
       element._nameInput = 'test';
       element._headerNameFocus({
-        target: 'other'
+        target: 'other',
       });
       assert.equal(element._nameInput, 'test');
     });
 
     it('Sets value from currentTarget', () => {
       element._headerNameFocus({
-        currentTarget: 'other'
+        currentTarget: 'other',
       });
       assert.equal(element._nameInput, 'other');
     });
 
     it('Sets value from target', () => {
       element._headerNameFocus({
-        target: 'other'
+        target: 'other',
       });
       assert.equal(element._nameInput, 'other');
     });
@@ -249,7 +255,7 @@ describe('<api-headers-form-item>', function() {
 
   describe('_onHeaderNameSelected()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.model = genModel();
     });
@@ -257,8 +263,8 @@ describe('<api-headers-form-item>', function() {
     it('sets the name from simple string suggestion', () => {
       element._onHeaderNameSelected({
         detail: {
-          value: 'test-value'
-        }
+          value: 'test-value',
+        },
       });
       assert.equal(element.name, 'test-value');
     });
@@ -267,9 +273,9 @@ describe('<api-headers-form-item>', function() {
       element._onHeaderNameSelected({
         detail: {
           value: {
-            value: 'test-value'
-          }
-        }
+            value: 'test-value',
+          },
+        },
       });
       assert.equal(element.name, 'test-value');
     });
@@ -277,7 +283,7 @@ describe('<api-headers-form-item>', function() {
 
   describe('_headerNameHandler()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       const region = await definitionsFixture();
       element = region.querySelector('api-headers-form-item');
       element.model = genModel();
@@ -288,8 +294,8 @@ describe('<api-headers-form-item>', function() {
       const spy = sinon.spy(element, '_queryHeaderNameSuggestions');
       element._headerNameHandler({
         detail: {
-          value: 'test'
-        }
+          value: 'test',
+        },
       });
       assert.equal(spy.args[0][0], 'test');
     });
@@ -299,8 +305,8 @@ describe('<api-headers-form-item>', function() {
       element._nameSuggestionsOpened = true;
       element._headerNameHandler({
         detail: {
-          value: 'no way to have a suggestion'
-        }
+          value: 'no way to have a suggestion',
+        },
       });
       assert.isUndefined(element._nameSuggestions);
       assert.isFalse(element._nameSuggestionsOpened);
@@ -309,45 +315,57 @@ describe('<api-headers-form-item>', function() {
     it('Sets _nameSuggestions', () => {
       element._headerNameHandler({
         detail: {
-          value: 'accept-encoding'
-        }
+          value: 'accept-encoding',
+        },
       });
       assert.lengthOf(element._nameSuggestions, 1);
-      assert.deepEqual(element._nameSuggestions, [{
-        value: 'Accept-Encoding',
-        display: 'Accept-Encoding'
-      }]);
+      assert.deepEqual(element._nameSuggestions, [
+        {
+          value: 'Accept-Encoding',
+          display: 'Accept-Encoding',
+        },
+      ]);
     });
   });
 
   describe('Name autocomplete', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       const region = await definitionsFixture();
       element = region.querySelector('api-headers-form-item');
       element.model = {
         binding: 'header',
         name: '',
         value: '',
-        schema: {}
+        schema: {},
       };
       await nextFrame();
     });
 
     it('sets name suggestions on name field focus', () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
-      assert.typeOf(element._nameSuggestions, 'array', 'Name suggestions are set');
+      assert.typeOf(
+        element._nameSuggestions,
+        'array',
+        'Name suggestions are set'
+      );
     });
 
     it('sets _nameInput property on name field focus', () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       assert.equal(element._nameInput, input, 'Name suggestions are set');
     });
 
     it('renders autocomplete on name field focus', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       await nextFrame();
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
@@ -355,7 +373,9 @@ describe('<api-headers-form-item>', function() {
     });
 
     it('autocomplete is closed on focus', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       await nextFrame();
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
@@ -363,48 +383,62 @@ describe('<api-headers-form-item>', function() {
     });
 
     it('opens autocomplete on input', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       await nextFrame();
       input.value = 'c';
       input.dispatchEvent(new CustomEvent('input'));
       // Suggestions opens after a timeout.
-      await aTimeout();
+      await aTimeout(0);
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
       assert.isTrue(node.opened);
     });
 
     it('opens autocomplete when empty input on arrow down', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       await nextFrame();
       MockInteractions.keyDownOn(input, 40, [], 'ArrowDown');
       // Suggestions opens after a timeout.
-      await aTimeout();
+      await aTimeout(0);
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
       assert.isTrue(node.opened);
     });
 
     it('sets autocomplete element when name changes and has suggestions', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       input.value = 'c';
       input.dispatchEvent(new CustomEvent('input'));
       await nextFrame();
-      assert.typeOf(element._nameSuggestions, 'array', 'Name suggestions are set');
+      assert.typeOf(
+        element._nameSuggestions,
+        'array',
+        'Name suggestions are set'
+      );
       await nextFrame();
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
       assert.ok(node, 'autocomplete is rendered');
     });
 
     it('Updates name when suggestion is selected', async () => {
-      const input = element.shadowRoot.querySelector('anypoint-input.param-name');
+      const input = element.shadowRoot.querySelector(
+        'anypoint-input.param-name'
+      );
       MockInteractions.focus(input);
       input.value = 'content-ty';
       await nextFrame();
       input.dispatchEvent(new CustomEvent('input'));
-      await aTimeout();
-      const node = element.shadowRoot.querySelector('anypoint-autocomplete anypoint-item');
+      await aTimeout(0);
+      const node = element.shadowRoot.querySelector(
+        'anypoint-autocomplete anypoint-item'
+      );
       MockInteractions.tap(node);
       await nextFrame();
       assert.equal(element.name, 'Content-Type');
@@ -413,14 +447,14 @@ describe('<api-headers-form-item>', function() {
 
   describe('Value autocomplete', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       const region = await definitionsFixture();
       element = region.querySelector('api-headers-form-item');
       element.model = {
         binding: 'header',
         name: 'content-type',
         value: '',
-        schema: {}
+        schema: {},
       };
       element.name = 'content-type';
       await nextFrame();
@@ -439,7 +473,7 @@ describe('<api-headers-form-item>', function() {
       const input = element.shadowRoot.querySelector('api-property-form-item');
       MockInteractions.keyDownOn(input, 40, [], 'ArrowDown');
       // Suggestions opens after a timeout.
-      await aTimeout();
+      await aTimeout(0);
       const node = element.shadowRoot.querySelector('.value-autocomplete');
       assert.isTrue(node.opened);
     });
@@ -450,9 +484,11 @@ describe('<api-headers-form-item>', function() {
       const input = element.shadowRoot.querySelector('api-property-form-item');
       MockInteractions.keyDownOn(input, 40, [], 'ArrowDown');
       // Suggestions opens after a timeout.
-      await aTimeout();
+      await aTimeout(0);
 
-      const node = element.shadowRoot.querySelector('.value-autocomplete anypoint-item');
+      const node = element.shadowRoot.querySelector(
+        '.value-autocomplete anypoint-item'
+      );
       MockInteractions.tap(node);
       await nextFrame();
       assert.equal(element.value, node.innerText.trim());
@@ -461,13 +497,13 @@ describe('<api-headers-form-item>', function() {
 
   describe('focus()', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await basicFixture();
       element.model = {
         binding: 'header',
         name: '',
         value: '',
-        schema: {}
+        schema: {},
       };
       await nextFrame();
     });
@@ -493,7 +529,7 @@ describe('<api-headers-form-item>', function() {
 
   describe('No docs property', () => {
     let element;
-    beforeEach(async function() {
+    beforeEach(async () => {
       element = await noDocsFixture();
       element.model = genModel();
       await nextFrame();
@@ -530,12 +566,12 @@ describe('<api-headers-form-item>', function() {
         value: '',
         schema: {
           isCustom: true,
-          inputLabel: 'Enter value'
-        }
+          inputLabel: 'Enter value',
+        },
       };
       await nextFrame();
       await assert.isAccessible(element, {
-        ignoredRules: ['color-contrast']
+        ignoredRules: ['color-contrast'],
       });
     });
 
@@ -551,12 +587,12 @@ describe('<api-headers-form-item>', function() {
         value: '',
         schema: {
           isCustom: false,
-          inputLabel: 'Enter value'
-        }
+          inputLabel: 'Enter value',
+        },
       };
       await nextFrame();
       await assert.isAccessible(element, {
-        ignoredRules: ['color-contrast']
+        ignoredRules: ['color-contrast'],
       });
     });
   });

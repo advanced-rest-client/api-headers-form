@@ -236,7 +236,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
       this._nameSuggestionsOpened = false;
       return;
     }
-    this._nameSuggestions = suggestions.map(item => {
+    this._nameSuggestions = suggestions.map((item) => {
       return {
         value: item.key,
         display: item.key,

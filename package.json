@@ -102,7 +102,7 @@
   },
   "prettier": {
     "singleQuote": true,
-    "arrowParens": "avoid"
+    "arrowParens": "always"
   },
   "husky": {
     "hooks": {

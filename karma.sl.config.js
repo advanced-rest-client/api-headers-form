@@ -10,8 +10,8 @@ module.exports = (config) => {
     },
     client: {
       mocha: {
-        timeout: 15000
-      }
+        timeout: 15000,
+      },
     },
   });
   slConfig.browsers = [
@@ -20,7 +20,7 @@ module.exports = (config) => {
     'SL_Firefox',
     'SL_Firefox-1',
     'SL_Safari',
-    'SL_EDGE'
+    'SL_EDGE',
   ];
   config.set(merge(createBaseConfig(config), slConfig));
   return config;

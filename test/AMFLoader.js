@@ -51,7 +51,7 @@ export function lookupOperation(model, endpoint, operation) {
   );
   const ops = helper._ensureArray(endPoint[opKey]);
   return ops.find(
-    item =>
+    (item) =>
       helper._getValue(item, helper.ns.aml.vocabularies.apiContract.method) ===
       operation
   );
