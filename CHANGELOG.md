@@ -545,3 +545,20 @@
  [67657a2](https://github.com/advanced-rest-client/api-headers-form/commit/67657a228051b403c89f8ffdcc40b0a62ccd9eb0) by Pawel Psztyc
 
 
+<a name="4.1.1"></a>
+## [4.1.1](https://github.com/advanced-rest-client/api-headers-form/compare/4.0.3...4.1.1) (2020-05-15)
+
+### Build
+
+* bumping version [3974324](https://github.com/advanced-rest-client/api-headers-form/commit/3974324575b684dff4016242ed1dbe620692f3f8) by Pawel
+
+
+### Update
+
+* upgrading dependencies [c819134](https://github.com/advanced-rest-client/api-headers-form/commit/c8191348888acb391b64692372a891fe90cc7d90) by Pawel
+* upgrading to open-wc standards [273b7dc](https://github.com/advanced-rest-client/api-headers-form/commit/273b7dc3b5f33bbfe6dcb1f98acc5d30f7ea372f) by Pawel
+* [ci skip] automated merge master->stage. syncing main branches [6dbc108](https://github.com/advanced-rest-client/api-headers-form/commit/6dbc10882cd1fdc909abbbf82c87f9de48fa6939) by Ci agent
+* moving sources to the src/ folder [bb924a4](https://github.com/advanced-rest-client/api-headers-form/commit/bb924a4b047b67c69771e15bdf107825c3404a61) by Pawel
+* bulk upgrade to latest ARC standards [e94e7d6](https://github.com/advanced-rest-client/api-headers-form/commit/e94e7d6b09ebdf1da9dcd5dfbbfd2609d51df291) by Pawel
+
+
