@@ -28,6 +28,7 @@ export default css`
   .param-name,
   api-property-form-item {
     flex: 1;
+    margin-right: -8px;
   }
 
   api-property-form-item[isarray] {

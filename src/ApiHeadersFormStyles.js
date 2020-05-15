@@ -28,4 +28,12 @@ export default css`
     height: 24px;
     fill: currentColor;
   }
+
+  :host([narrow]) .form-item[data-optional] {
+    display: none;
+  }
+
+  :host([optionalopened][narrow]) .form-item[data-optional] {
+    display: block;
+  }
 `;
