@@ -562,3 +562,25 @@
 * bulk upgrade to latest ARC standards [e94e7d6](https://github.com/advanced-rest-client/api-headers-form/commit/e94e7d6b09ebdf1da9dcd5dfbbfd2609d51df291) by Pawel
 
 
+<a name="4.1.2"></a>
+## [4.1.2](https://github.com/advanced-rest-client/api-headers-form/compare/4.1.0...4.1.2) (2020-05-15)
+
+### Build
+
+* bumping version [377a1e1](https://github.com/advanced-rest-client/api-headers-form/commit/377a1e150e5d1d7d2982aa313afb2c83f4152789) by Pawel
+
+
+### Update
+
+* upgrading headers definition use [275926d](https://github.com/advanced-rest-client/api-headers-form/commit/275926df3c4cb1937bc577b082d820ef3449a25a) by Pawel
+* [ci skip] automated merge master->stage. syncing main branches [7e6d157](https://github.com/advanced-rest-client/api-headers-form/commit/7e6d157d7129177853510320765c13019c36e140) by Ci agent
+* upgrading dependencies [c819134](https://github.com/advanced-rest-client/api-headers-form/commit/c8191348888acb391b64692372a891fe90cc7d90) by Pawel
+* upgrading to open-wc standards [273b7dc](https://github.com/advanced-rest-client/api-headers-form/commit/273b7dc3b5f33bbfe6dcb1f98acc5d30f7ea372f) by Pawel
+* [ci skip] automated merge master->stage. syncing main branches [6dbc108](https://github.com/advanced-rest-client/api-headers-form/commit/6dbc10882cd1fdc909abbbf82c87f9de48fa6939) by Ci agent
+
+
+### Testing
+
+* adding tests for APIC-410 [713fe1c](https://github.com/advanced-rest-client/api-headers-form/commit/713fe1c9bb14750af61aebae7eaac33f2fe17c26) by Pawel
+
+
