@@ -2,8 +2,9 @@ import { html, LitElement } from 'lit-element';
 import { ValidatableMixin } from '@anypoint-web-components/validatable-mixin/validatable-mixin.js';
 import markdownStyles from '@advanced-rest-client/markdown-styles/markdown-styles.js';
 import formStyles from '@api-components/api-form-mixin/api-form-styles.js';
-import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import { help } from '@advanced-rest-client/arc-icons/ArcIcons.js';
+import { queryRequestHeaders } from '@advanced-rest-client/arc-definitions';
+import '@anypoint-web-components/anypoint-button/anypoint-button.js';
 import '@anypoint-web-components/anypoint-input/anypoint-input.js';
 import '@anypoint-web-components/anypoint-button/anypoint-icon-button.js';
 import '@api-components/api-property-form-item/api-property-form-item.js';
@@ -210,6 +211,9 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    */
   _onHeaderNameSelected(e) {
     const { value } = e.detail;
+    if (!value) {
+      return;
+    }
     this.name = value.value || value;
     this._notifyNameChange(this.name);
   }
@@ -230,7 +234,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
    * @param {String} query The header name to query for.
    */
   _setNameSuggestions(query) {
-    const suggestions = this._queryHeaderNameSuggestions(query);
+    const suggestions = queryRequestHeaders(query);
     if (!suggestions || !suggestions.length) {
       this._nameSuggestions = undefined;
       this._nameSuggestionsOpened = false;
@@ -242,31 +246,6 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
         display: item.key,
       };
     });
-  }
-
-  /**
-   * Dispatches `query-headers` custom event to retreive from the application
-   * headers definition.
-   *
-   * `api-headers-form` element contains `arc-definitions` element that
-   * listens for this event.
-   *
-   * @param {string} q Header name to query for
-   * @return {object[]} Headers definition or empty array
-   */
-  _queryHeaderNameSuggestions(q) {
-    const ev = new CustomEvent('query-headers', {
-      detail: {
-        type: 'request',
-        query: q,
-        headers: undefined,
-      },
-      cancelable: true,
-      bubbles: true,
-      composed: true,
-    });
-    this.dispatchEvent(ev);
-    return ev.detail.headers;
   }
 
   _getValidity() {
@@ -293,12 +272,16 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
     }
     this.__valueQueryHeaders = setTimeout(() => {
       this.__valueQueryHeaders = null;
-      const info = this._queryHeaderNameSuggestions(this.name);
-      this._updateValueAutocomplete(info);
-      if (!this.noDocs) {
-        this._updateHeaderDocs(info);
-      }
+      this._processNameChange();
     });
+  }
+
+  _processNameChange() {
+    const info = queryRequestHeaders(this.name);
+    this._updateValueAutocomplete(info);
+    if (!this.noDocs) {
+      this._updateHeaderDocs(info);
+    }
   }
 
   /**
@@ -406,7 +389,7 @@ export class ApiHeadersFormItem extends ValidatableMixin(LitElement) {
   _valueSelectedHandler() {
     setTimeout(() => {
       // @ts-ignore
-      this.validate();
+      this.validate(this.value);
     });
   }
 

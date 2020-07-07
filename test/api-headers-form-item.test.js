@@ -30,12 +30,9 @@ describe('<api-headers-form-item>', () => {
     `);
   }
 
-  async function definitionsFixture() {
+  async function customFixtureBasic() {
     return fixture(html`
-      <div>
-        <arc-definitions></arc-definitions>
-        <api-headers-form-item iscustom></api-headers-form-item>
-      </div>
+      <api-headers-form-item iscustom></api-headers-form-item>
     `);
   }
 
@@ -284,23 +281,12 @@ describe('<api-headers-form-item>', () => {
   describe('_headerNameHandler()', () => {
     let element;
     beforeEach(async () => {
-      const region = await definitionsFixture();
-      element = region.querySelector('api-headers-form-item');
+      element = await customFixtureBasic();
       element.model = genModel();
       await nextFrame();
     });
 
-    it('Calls _queryHeaderNameSuggestions()', () => {
-      const spy = sinon.spy(element, '_queryHeaderNameSuggestions');
-      element._headerNameHandler({
-        detail: {
-          value: 'test',
-        },
-      });
-      assert.equal(spy.args[0][0], 'test');
-    });
-
-    it('Clean up when no suggestions', () => {
+    it('cleans up when no suggestions', () => {
       element._nameSuggestions = [];
       element._nameSuggestionsOpened = true;
       element._headerNameHandler({
@@ -312,7 +298,7 @@ describe('<api-headers-form-item>', () => {
       assert.isFalse(element._nameSuggestionsOpened);
     });
 
-    it('Sets _nameSuggestions', () => {
+    it('sets _nameSuggestions', () => {
       element._headerNameHandler({
         detail: {
           value: 'accept-encoding',
@@ -331,8 +317,7 @@ describe('<api-headers-form-item>', () => {
   describe('Name autocomplete', () => {
     let element;
     beforeEach(async () => {
-      const region = await definitionsFixture();
-      element = region.querySelector('api-headers-form-item');
+      element = await customFixtureBasic();
       element.model = {
         binding: 'header',
         name: '',
@@ -426,30 +411,12 @@ describe('<api-headers-form-item>', () => {
       const node = element.shadowRoot.querySelector('anypoint-autocomplete');
       assert.ok(node, 'autocomplete is rendered');
     });
-
-    it('Updates name when suggestion is selected', async () => {
-      const input = element.shadowRoot.querySelector(
-        'anypoint-input.param-name'
-      );
-      MockInteractions.focus(input);
-      input.value = 'content-ty';
-      await nextFrame();
-      input.dispatchEvent(new CustomEvent('input'));
-      await aTimeout(0);
-      const node = element.shadowRoot.querySelector(
-        'anypoint-autocomplete anypoint-item'
-      );
-      MockInteractions.tap(node);
-      await nextFrame();
-      assert.equal(element.name, 'Content-Type');
-    });
   });
 
   describe('Value autocomplete', () => {
     let element;
     beforeEach(async () => {
-      const region = await definitionsFixture();
-      element = region.querySelector('api-headers-form-item');
+      element = await customFixtureBasic();
       element.model = {
         binding: 'header',
         name: 'content-type',
@@ -457,7 +424,7 @@ describe('<api-headers-form-item>', () => {
         schema: {},
       };
       element.name = 'content-type';
-      await nextFrame();
+      await aTimeout(0);
     });
 
     it('has value suggestions for the name', async () => {
@@ -555,8 +522,7 @@ describe('<api-headers-form-item>', () => {
 
   describe('a11y', () => {
     it('is accessible with custom name and value and autocomplete', async () => {
-      const region = await definitionsFixture();
-      const element = region.querySelector('api-headers-form-item');
+      const element = await customFixtureBasic();
       element.name = 'content-type';
       element.value = 'test';
       element.isCustom = true;
@@ -576,8 +542,7 @@ describe('<api-headers-form-item>', () => {
     });
 
     it('is accessible with API model', async () => {
-      const region = await definitionsFixture();
-      const element = region.querySelector('api-headers-form-item');
+      const element = await customFixtureBasic();
       element.name = 'content-type';
       element.value = '';
       element.isCustom = false;
