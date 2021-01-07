@@ -10,6 +10,10 @@ The component works as a stand-alone editor that allows to define headers for HT
 
 Form headers editor provides convenient and accessible way of defining HTTP request headers for any HTTP tool.
 
+## Deprecation notice
+
+This element is moved to `api-headers` repository and `@api-components/api-headers` package. This element will be deprecated and archived once the migration finish.
+
 ## Version compatibility
 
 This version only works with AMF model version 2 (AMF parser >= 4.0.0).
